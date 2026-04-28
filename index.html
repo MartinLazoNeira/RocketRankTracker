@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rocket League Stats Tracker</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: rgb(255, 255, 255);
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .search-box {
+            background: white;
+            border-radius: 50px;
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+            max-width: 500px;
+            margin: 0 auto 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .search-box input {
+            flex: 1;
+            border: none;
+            padding: 15px 20px;
+            font-size: 16px;
+            border-radius: 50px;
+            outline: none;
+        }
+        
+        .search-box select {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 50px;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .search-box button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        
+        .search-box button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            padding: 50px;
+        }
+        
+        .error {
+            background: #ff4757;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .player-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+        
+        .player-name {
+            flex: 1;
+        }
+        
+        .player-name h2 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .player-name p {
+            color: #666;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .rank-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .rank-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .rank-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .rank-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .rank-icon {
+            width: 60px;
+            height: 60px;
+            background: #ddd;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+        
+        .rank-details {
+            flex: 1;
+        }
+        
+        .rank-name {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #333;
+        }
+        
+        .rank-mmr {
+            color: #667eea;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .stats-detail {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            color: #666;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        @media (max-width: 768px) {
+            .search-box {
+                flex-direction: column;
+                border-radius: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .player-info {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚗 Rocket League Stats Tracker</h1>
+            <p>Ingresa tu nombre de usuario para ver tus estadísticas</p>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" id="username" placeholder="Nombre de usuario..." />
+            <select id="platform">
+                <option value="epic">Epic Games</option>
+                <option value="steam">Steam</option>
+                <option value="psn">PlayStation</option>
+                <option value="xbl">Xbox</option>
+            </select>
+            <button onclick="searchPlayer()">Buscar</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script type="module">
+        import { fetchProfile } from 'https://unpkg.com/trn-rocket-league@latest/dist/index.esm.js';
+        
+        window.searchPlayer = async function() {
+            const username = document.getElementById('username').value.trim();
+            const platform = document.getElementById('platform').value;
+            const resultsDiv = document.getElementById('results');
+            
+            if (!username) {
+                resultsDiv.innerHTML = '<div class="error">Por favor, ingresa un nombre de usuario</div>';
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<div class="loading">🔍 Buscando estadísticas...</div>';
+            
+            try {
+                const profile = await fetchProfile(username, platform);
+                displayStats(profile);
+            } catch (error) {
+                console.error('Error:', error);
+                resultsDiv.innerHTML = '<div class="error">❌ No se encontró el jugador. Verifica el nombre y la plataforma.</div>';
+            }
+        };
+        
+        function displayStats(profile) {
+            const resultsDiv = document.getElementById('results');
+            
+            const platformNames = {
+                'epic': 'Epic Games',
+                'steam': 'Steam',
+                'psn': 'PlayStation Network',
+                'xbl': 'Xbox Live'
+            };
+            
+            let html = `
+                <div class="stats-card">
+                    <div class="player-info">
+                        <div class="player-avatar">
+                            ${profile.avatarURL ? `<img src="${profile.avatarURL}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">` : '🚗'}
+                        </div>
+                        <div class="player-name">
+                            <h2>${profile.username}</h2>
+                            <p>Plataforma: ${platformNames[profile.platform] || profile.platform}</p>
+                            <p>País: ${profile.countryCode || 'No especificado'}</p>
+                        </div>
+                    </div>
+                    
+                    <h3>📊 Estadísticas Generales</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                            <div style="color: #666;">Partidas Jugadas</div>
+                            <div style="font-size: 1.5em; font-weight: bold;">${profile.stats.totalMatchesPlayed || 0}</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                            <div style="color: #666;">Victorias</div>
+                            <div style="font-size: 1.5em; font-weight: bold;">${profile.stats.overview.wins || 0}</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                            <div style="color: #666;">Goles</div>
+                            <div style="font-size: 1.5em; font-weight: bold;">${profile.stats.overview.goals || 0}</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                            <div style="color: #666;">Asistencias</div>
+                            <div style="font-size: 1.5em; font-weight: bold;">${profile.stats.overview.assists || 0}</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                            <div style="color: #666;">Atajadas</div>
+                            <div style="font-size: 1.5em; font-weight: bold;">${profile.stats.overview.saves || 0}</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                            <div style="color: #666;">MVP</div>
+                            <div style="font-size: 1.5em; font-weight: bold;">${profile.stats.overview.mvps || 0}</div>
+                        </div>
+                    </div>
+                    
+                    <h3>🏆 Ránkings Competitivos</h3>
+                    <div class="stats-grid">
+            `;
+            
+            // Función para mostrar ránkings
+            const rankedModes = [
+                { key: 'duel', name: '1 vs 1', icon: '⚔️' },
+                { key: 'double', name: '2 vs 2', icon: '👥' },
+                { key: 'standard', name: '3 vs 3', icon: '👥' }
+            ];
+            
+            for (const mode of rankedModes) {
+                const rankData = profile.stats.ranked[mode.key];
+                if (rankData && rankData.rank) {
+                    html += `
+                        <div class="rank-card">
+                            <h3>${mode.icon} ${mode.name}</h3>
+                            <div class="rank-info">
+                                <div class="rank-icon">
+                                    ${rankData.rank.imageURL ? `<img src="${rankData.rank.imageURL}" style="width: 100%; height: 100%; object-fit: contain;">` : '🏆'}
+                                </div>
+                                <div class="rank-details">
+                                    <div class="rank-name">${rankData.rank.tier.name} ${rankData.rank.division ? `- ${rankData.rank.division.name}` : ''}</div>
+                                    <div class="rank-mmr">MMR: ${rankData.mmr || 'N/A'}</div>
+                                </div>
+                            </div>
+                            <div class="stats-detail">
+                                <div class="stat-item">
+                                    <span class="stat-label">Partidas jugadas:</span>
+                                    <span class="stat-value">${rankData.matchesPlayed || 0}</span>
+                                </div>
+                                ${rankData.winStreak ? `
+                                <div class="stat-item">
+                                    <span class="stat-label">Racha de victorias:</span>
+                                    <span class="stat-value">${rankData.winStreak}</span>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        // Ejemplo de uso con un jugador famoso (opcional)
+        // Descomentar para mostrar stats de ejemplo al cargar la página
+        /*
+        setTimeout(() => {
+            const demoUsername = 'kuxir97';
+            const demoPlatform = 'steam';
+            document.getElementById('username').value = demoUsername;
+            document.getElementById('platform').value = demoPlatform;
+            window.searchPlayer();
+        }, 500);
+        */
+    </script>
+</body>
+</html>
