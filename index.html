@@ -25,7 +25,6 @@
             --modal-bg: white;
             --modal-text: #333;
             --past-event-bg: #e0e0e0;
-            --past-event-text: #999;
         }
 
         body.dark {
@@ -40,7 +39,6 @@
             --modal-bg: #2a2a3a;
             --modal-text: #e0e0e0;
             --past-event-bg: #1a1a2a;
-            --past-event-text: #666;
         }
 
         body {
@@ -172,7 +170,7 @@
         }
 
         .event-card.past {
-            opacity: 0.7;
+            opacity: 0.8;
             border-left-color: #888;
         }
 
@@ -549,19 +547,19 @@
     </div>
 
     <script>
-        // Fecha actual para comparar eventos pasados
-        const today = new Date(2026, 3, 15); // Abril 15 2026 para simular eventos pasados
+        // FECHA ACTUAL: 15 de Abril 2026 (DESPUÉS de Boston que fue en Febrero)
+        const today = new Date(2026, 3, 15);
 
         const eventsData = {
             es: [
-                { name: "RLCS Major 1 - Boston", date: "19-22 Febrero 2026", dateStart: new Date(2026, 1, 19), location: "Boston, USA", prize: "$354,000", verified: true, desc: "Primer Major de la temporada 2026. Participan los mejores equipos del mundo. Fase de grupos + playoffs en vivo.", winner: "Team Vitality", winnerScore: "4-2" },
+                { name: "RLCS Major 1 - Boston", date: "19-22 Febrero 2026", dateStart: new Date(2026, 1, 19), location: "Boston, USA", prize: "$354,000", verified: true, desc: "Primer Major de la temporada 2026. Participan los mejores equipos del mundo. Fase de grupos + playoffs en vivo.", winner: "Gentle Mates", winnerScore: "4-1" },
                 { name: "RLCS Major 2 - París", date: "20-24 Mayo 2026", dateStart: new Date(2026, 4, 20), location: "París, Francia", prize: "$354,000", verified: true, desc: "Segundo Major de la temporada. Se jugará en la Paris La Défense Arena, el recinto cubierto más grande de Europa.", winner: null },
                 { name: "RLCS World Championship", date: "15-20 Septiembre 2026", dateStart: new Date(2026, 8, 15), location: "TBD", prize: "$1,200,000", verified: true, desc: "¡El campeonato mundial! Los 16 mejores equipos del mundo compiten por el título de Campeón Mundial.", winner: null },
                 { name: "Esports World Cup", date: "Julio-Agosto 2026", dateStart: new Date(2026, 6, 1), location: "Riad, Arabia Saudita", prize: "Por anunciar", verified: false, desc: "Rocket League confirmado en el calendario. Se espera el torneo con el prize pool más grande del año.", winner: null },
                 { name: "FIFAe World Cup", date: "Diciembre 2026", dateStart: new Date(2026, 11, 1), location: "Riad, Arabia Saudita", prize: "Por anunciar", verified: true, desc: "Primera colaboración oficial entre FIFA y Rocket League. Torneo de selecciones nacionales.", winner: null }
             ],
             en: [
-                { name: "RLCS Major 1 - Boston", date: "Feb 19-22, 2026", dateStart: new Date(2026, 1, 19), location: "Boston, USA", prize: "$354,000", verified: true, desc: "First Major of the 2026 season. Top teams from around the world compete. Group stage + live playoffs.", winner: "Team Vitality", winnerScore: "4-2" },
+                { name: "RLCS Major 1 - Boston", date: "Feb 19-22, 2026", dateStart: new Date(2026, 1, 19), location: "Boston, USA", prize: "$354,000", verified: true, desc: "First Major of the 2026 season. Top teams from around the world compete. Group stage + live playoffs.", winner: "Gentle Mates", winnerScore: "4-1" },
                 { name: "RLCS Major 2 - Paris", date: "May 20-24, 2026", dateStart: new Date(2026, 4, 20), location: "Paris, France", prize: "$354,000", verified: true, desc: "Second Major of the season. Will be played at Paris La Défense Arena, Europe's largest indoor venue.", winner: null },
                 { name: "RLCS World Championship", date: "Sep 15-20, 2026", dateStart: new Date(2026, 8, 15), location: "TBD", prize: "$1,200,000", verified: true, desc: "The World Championship! Top 16 teams compete for the title of World Champion.", winner: null },
                 { name: "Esports World Cup", date: "July-August 2026", dateStart: new Date(2026, 6, 1), location: "Riyadh, Saudi Arabia", prize: "TBA", verified: false, desc: "Rocket League confirmed. Expected to be the largest prize pool of the year.", winner: null },
@@ -605,7 +603,7 @@
             
             const isPast = isEventPast(event.dateStart);
             const statusText = isPast ? (currentLang === 'es' ? '🏁 FINALIZADO' : '🏁 FINISHED') : (currentLang === 'es' ? '📅 PRÓXIMO' : '📅 UPCOMING');
-            const winnerHtml = event.winner ? `<p><strong>🏆 Ganador:</strong> ${event.winner} ${event.winnerScore ? `(${event.winnerScore})` : ''}</p>` : '';
+            const winnerHtml = event.winner && isPast ? `<p><strong>🏆 Ganador:</strong> ${event.winner} ${event.winnerScore ? `(${event.winnerScore})` : ''}</p>` : '';
             
             modalTitle.innerHTML = `🏆 ${event.name}`;
             modalBody.innerHTML = `
@@ -685,7 +683,7 @@
                 : [{action:"Accelerate",key:"R2/RT",why:"Proportional response"},{action:"Brake / Reverse",key:"L2/LT",why:"Progressive control"},{action:"Jump",key:"X/A",why:"Quick access"},{action:"Boost",key:"R1/RB",why:"Allows jumping and boosting together"},{action:"Drift / Air Roll",key:"Square/X",why:"Standard comfortable"},{action:"Air Roll Left",key:"L1/LB",why:"Left air roll"},{action:"Air Roll Right",key:"R1/RB",why:"Right air roll"}];
             body.innerHTML = '';
             controls.forEach(ctrl => {
-                body.innerHTML += `<tr><td>${ctrl.action}</td><td><span class="key-badge">${ctrl.key}</span></td><td>${ctrl.why}</td></tr>`;
+                body.innerHTML += `<tr><td>${ctrl.action}</td><td><span class="key-badge">${ctrl.key}</span></td><td>${ctrl.why}</tr>`;
             });
         }
 
@@ -712,41 +710,25 @@
         }
 
         function updateUITexts() {
-            // Header
             document.getElementById('mainTitle').innerHTML = currentLang === 'es' ? '🏆 Rocket League Pro Settings' : '🏆 Rocket League Pro Settings';
             document.getElementById('mainDesc').innerHTML = currentLang === 'es' ? 'Configuración de pros y calendario oficial RLCS 2026' : 'Pro settings and official RLCS 2026 schedule';
             document.getElementById('badgeText').innerHTML = currentLang === 'es' ? '🔥 Datos oficiales' : '🔥 Official data';
-            
-            // Títulos de pestañas (ahora se actualizan)
             document.getElementById('prosTitle').innerHTML = currentLang === 'es' ? '👑 Configuración de Pros' : '👑 Pro Players Settings';
             document.getElementById('camTitle').innerHTML = currentLang === 'es' ? '📷 Configuración de Cámara' : '📷 Camera Settings';
             document.getElementById('controlsTitle').innerHTML = currentLang === 'es' ? '🎮 Controles' : '🎮 Controls';
             document.getElementById('videoTitle').innerHTML = currentLang === 'es' ? '🖥️ Video' : '🖥️ Video Settings';
             document.getElementById('tipsTitle').innerHTML = currentLang === 'es' ? '💡 Consejos para mejorar' : '💡 Improvement Tips';
-            
-            // Tabla controles
             document.getElementById('actionCol').innerHTML = currentLang === 'es' ? 'Acción' : 'Action';
             document.getElementById('keyCol').innerHTML = currentLang === 'es' ? 'Tecla' : 'Key';
             document.getElementById('whyCol').innerHTML = currentLang === 'es' ? 'Por qué' : 'Why';
-            
-            // Eventos título
             document.getElementById('eventsTitle').innerHTML = currentLang === 'es' ? '📅 Próximos Eventos' : '📅 Upcoming Events';
             
-            // Botones sidebar
             const themeBtn = document.getElementById('themeBtn');
             const isDark = document.body.classList.contains('dark');
             themeBtn.innerHTML = isDark ? (currentLang === 'es' ? '☀️ Modo Claro' : '☀️ Light Mode') : (currentLang === 'es' ? '🌙 Modo Oscuro' : '🌙 Dark Mode');
             
             const langBtn = document.getElementById('langBtn');
             langBtn.innerHTML = currentLang === 'es' ? '🇪🇸 Español' : '🇺🇸 English';
-            
-            // Botones de navegación
-            const navBtns = document.querySelectorAll('.nav-btn');
-            if(navBtns[0]) navBtns[0].innerHTML = currentLang === 'es' ? '👑 Pro Players' : '👑 Pro Players';
-            if(navBtns[1]) navBtns[1].innerHTML = currentLang === 'es' ? '📷 Cámara' : '📷 Camera';
-            if(navBtns[2]) navBtns[2].innerHTML = currentLang === 'es' ? '🎮 Controles' : '🎮 Controls';
-            if(navBtns[3]) navBtns[3].innerHTML = currentLang === 'es' ? '🖥️ Video' : '🖥️ Video';
-            if(navBtns[4]) navBtns[4].innerHTML = currentLang === 'es' ? '💡 Consejos' : '💡 Tips';
         }
 
         function loadAllContent() {
