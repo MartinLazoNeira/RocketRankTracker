@@ -504,11 +504,11 @@
             </div>
             
             <ul class="nav-menu">
-                <li class="nav-item"><button class="nav-btn active" onclick="showTab('pros', this)">👑 Pro Players</button></li>
-                <li class="nav-item"><button class="nav-btn" onclick="showTab('camara', this)">📷 Cámara</button></li>
-                <li class="nav-item"><button class="nav-btn" onclick="showTab('controles', this)">🎮 Controles</button></li>
-                <li class="nav-item"><button class="nav-btn" onclick="showTab('video', this)">🖥️ Video</button></li>
-                <li class="nav-item"><button class="nav-btn" onclick="showTab('consejos', this)">💡 Consejos</button></li>
+                <li class="nav-item"><button class="nav-btn active" id="navPros" onclick="showTab('pros', this)">👑 Pro Players</button></li>
+                <li class="nav-item"><button class="nav-btn" id="navCamara" onclick="showTab('camara', this)">📷 Cámara</button></li>
+                <li class="nav-item"><button class="nav-btn" id="navControles" onclick="showTab('controles', this)">🎮 Controles</button></li>
+                <li class="nav-item"><button class="nav-btn" id="navVideo" onclick="showTab('video', this)">🖥️ Video</button></li>
+                <li class="nav-item"><button class="nav-btn" id="navConsejos" onclick="showTab('consejos', this)">💡 Consejos</button></li>
             </ul>
             
             <div class="events-sidebar">
@@ -595,7 +595,7 @@
         // ==================== DATOS DE EVENTOS ====================
         const eventsData = {
             es: [
-                { name: "RLCS Major 1 - Boston", date: "19-22 Febrero 2026", dateStart: new Date(2026, 1, 19), dateEnd: new Date(2026, 1, 22), location: "Boston, USA", prize: "$354,000", verified: true, desc: "Primer Major de la temporada 2026. Participan los mejores equipos del mundo.", winner: "Gentle Mates", winnerScore: "4-1" },
+                { name: "RLCS Major 1 - Boston", date: "19-22 Febrero 2026", dateStart: new Date(2026, 1, 19), dateEnd: new Date(2026, 1, 22), location: "Boston, USA", prize: "$354,000", verified: true, desc: "Primer Major de la temporada 2026.", winner: "Gentle Mates", winnerScore: "4-1" },
                 { name: "RLCS Major 2 - París", date: "20-24 Mayo 2026", dateStart: new Date(2026, 4, 20), dateEnd: new Date(2026, 4, 24), location: "París, Francia", prize: "$354,000", verified: true, desc: "Segundo Major de la temporada.", winner: null },
                 { name: "RLCS World Championship", date: "15-20 Septiembre 2026", dateStart: new Date(2026, 8, 15), dateEnd: new Date(2026, 8, 20), location: "TBD", prize: "$1,200,000", verified: true, desc: "Campeonato mundial.", winner: null },
                 { name: "Esports World Cup", date: "Julio-Agosto 2026", dateStart: new Date(2026, 6, 1), dateEnd: new Date(2026, 7, 31), location: "Riad, Arabia Saudita", prize: "Por anunciar", verified: false, desc: "Rocket League confirmado.", winner: null },
@@ -634,9 +634,26 @@
             ]
         };
 
-        // ==================== DATOS TRADUCIDOS (CORREGIDOS) ====================
+        // ==================== DATOS TRADUCIDOS ====================
         const translationsData = {
             es: {
+                navPros: "👑 Pro Players",
+                navCamara: "📷 Cámara",
+                navControles: "🎮 Controles",
+                navVideo: "🖥️ Video",
+                navConsejos: "💡 Consejos",
+                eventsTitle: "📅 Próximos Eventos",
+                mainTitle: "🏆 Rocket League Pro Settings",
+                mainDesc: "Configuración de pros y calendario oficial RLCS 2026",
+                badgeText: "🔥 Datos oficiales",
+                prosTitle: "👑 Configuración de Pros",
+                camTitle: "📷 Configuración de Cámara",
+                controlsTitle: "🎮 Controles",
+                videoTitle: "🖥️ Video",
+                tipsTitle: "💡 Consejos para mejorar",
+                actionCol: "Acción",
+                keyCol: "Tecla",
+                whyCol: "Por qué",
                 camera: [
                     { name: "Campo de visión (FOV)", value: "110", desc: "Máximo permitido. Mejor visión periférica" },
                     { name: "Distancia", value: "270 - 280", desc: "Balance entre ver el campo y controlar el coche" },
@@ -674,6 +691,23 @@
                 ]
             },
             en: {
+                navPros: "👑 Pro Players",
+                navCamara: "📷 Camera",
+                navControles: "🎮 Controls",
+                navVideo: "🖥️ Video",
+                navConsejos: "💡 Tips",
+                eventsTitle: "📅 Upcoming Events",
+                mainTitle: "🏆 Rocket League Pro Settings",
+                mainDesc: "Pro settings and official RLCS 2026 schedule",
+                badgeText: "🔥 Official data",
+                prosTitle: "👑 Pro Players Settings",
+                camTitle: "📷 Camera Settings",
+                controlsTitle: "🎮 Controls",
+                videoTitle: "🖥️ Video Settings",
+                tipsTitle: "💡 Improvement Tips",
+                actionCol: "Action",
+                keyCol: "Key",
+                whyCol: "Why",
                 camera: [
                     { name: "Field of View (FOV)", value: "110", desc: "Maximum allowed. Better peripheral vision" },
                     { name: "Distance", value: "270 - 280", desc: "Balance between field view and car control" },
@@ -730,17 +764,17 @@
             
             const isFinished = isEventFinished(event);
             const statusText = isFinished ? (currentLang === 'es' ? '🏁 FINALIZADO' : '🏁 FINISHED') : (currentLang === 'es' ? '📅 PRÓXIMO' : '📅 UPCOMING');
-            const winnerHtml = event.winner && isFinished ? `<p><strong>🏆 Ganador:</strong> ${event.winner} ${event.winnerScore ? `(${event.winnerScore})` : ''}</p>` : '';
+            const winnerHtml = event.winner && isFinished ? `<p><strong>🏆 Winner:</strong> ${event.winner} ${event.winnerScore ? `(${event.winnerScore})` : ''}</p>` : '';
             
             modalTitle.innerHTML = `🏆 ${event.name}`;
             modalBody.innerHTML = `
-                <p><strong>📅 Fecha:</strong> ${event.date}</p>
-                <p><strong>📍 Ubicación:</strong> ${event.location}</p>
-                <p><strong>💰 Premio:</strong> ${event.prize}</p>
-                <p><strong>✅ Verificado:</strong> ${event.verified ? (currentLang === 'es' ? 'Sí' : 'Yes') : (currentLang === 'es' ? 'Pendiente' : 'Pending')}</p>
-                <p><strong>📖 Descripción:</strong> ${event.desc}</p>
+                <p><strong>📅 Date:</strong> ${event.date}</p>
+                <p><strong>📍 Location:</strong> ${event.location}</p>
+                <p><strong>💰 Prize:</strong> ${event.prize}</p>
+                <p><strong>✅ Verified:</strong> ${event.verified ? (currentLang === 'es' ? 'Yes' : 'Yes') : (currentLang === 'es' ? 'Pending' : 'Pending')}</p>
+                <p><strong>📖 Description:</strong> ${event.desc}</p>
                 ${winnerHtml}
-                <p><strong>📌 Estado:</strong> <span style="color: ${isFinished ? '#FF5E00' : '#4CAF50'}; font-weight: bold;">${statusText}</span></p>
+                <p><strong>📌 Status:</strong> <span style="color: ${isFinished ? '#FF5E00' : '#4CAF50'}; font-weight: bold;">${statusText}</span></p>
             `;
             modal.classList.add('show');
         };
@@ -757,7 +791,7 @@
             events.forEach(event => {
                 const isFinished = isEventFinished(event);
                 const statusClass = isFinished ? 'status-finished' : 'status-upcoming';
-                const statusText = isFinished ? (currentLang === 'es' ? '🏁 Finalizado' : '🏁 Finished') : (currentLang === 'es' ? '📅 Próximo' : '📅 Upcoming');
+                const statusText = isFinished ? (currentLang === 'es' ? '🏁 Finished' : '🏁 Finished') : (currentLang === 'es' ? '📅 Upcoming' : '📅 Upcoming');
                 
                 container.innerHTML += `
                     <div class="event-card ${isFinished ? 'past' : ''}" onclick="showEventDetails(${JSON.stringify(event).replace(/"/g, '&quot;')})">
@@ -765,7 +799,7 @@
                         <div class="event-date">📅 ${event.date}</div>
                         <div class="event-location">📍 ${event.location}</div>
                         <div class="event-status ${statusClass}">${statusText}</div>
-                        ${event.winner && isFinished ? `<div style="font-size:0.65em; color:#FF5E00; margin-top:5px;">🏆 Ganador: ${event.winner}</div>` : ''}
+                        ${event.winner && isFinished ? `<div style="font-size:0.65em; color:#FF5E00; margin-top:5px;">🏆 Winner: ${event.winner}</div>` : ''}
                     </div>
                 `;
             });
@@ -783,12 +817,12 @@
                     <div class="pro-settings">
                         <div class="pro-setting"><span class="setting-label">FOV:</span><span class="setting-value">${pro.settings.fov}</span></div>
                         <div class="pro-setting"><span class="setting-label">Dist:</span><span class="setting-value">${pro.settings.distance}</span></div>
-                        <div class="pro-setting"><span class="setting-label">Alt:</span><span class="setting-value">${pro.settings.height}</span></div>
-                        <div class="pro-setting"><span class="setting-label">Ang:</span><span class="setting-value">${pro.settings.angle}</span></div>
-                        <div class="pro-setting"><span class="setting-label">Rigidez:</span><span class="setting-value">${pro.settings.stiffness}</span></div>
-                        <div class="pro-setting"><span class="setting-label">Zona M:</span><span class="setting-value">${pro.settings.deadzone}</span></div>
-                        <div class="pro-setting"><span class="setting-label">Sen Dir:</span><span class="setting-value">${pro.settings.sens_dir}</span></div>
-                        <div class="pro-setting"><span class="setting-label">Sen Air:</span><span class="setting-value">${pro.settings.sens_air}</span></div>
+                        <div class="pro-setting"><span class="setting-label">Height:</span><span class="setting-value">${pro.settings.height}</span></div>
+                        <div class="pro-setting"><span class="setting-label">Angle:</span><span class="setting-value">${pro.settings.angle}</span></div>
+                        <div class="pro-setting"><span class="setting-label">Stiff:</span><span class="setting-value">${pro.settings.stiffness}</span></div>
+                        <div class="pro-setting"><span class="setting-label">Deadz:</span><span class="setting-value">${pro.settings.deadzone}</span></div>
+                        <div class="pro-setting"><span class="setting-label">Sen D:</span><span class="setting-value">${pro.settings.sens_dir}</span></div>
+                        <div class="pro-setting"><span class="setting-label">Sen A:</span><span class="setting-value">${pro.settings.sens_air}</span></div>
                     </div>
                 </div>`;
             });
@@ -836,19 +870,28 @@
 
         // ==================== ACTUALIZAR TEXTOS DE INTERFAZ ====================
         function updateUITexts() {
-            document.getElementById('mainTitle').innerHTML = currentLang === 'es' ? '🏆 Rocket League Pro Settings' : '🏆 Rocket League Pro Settings';
-            document.getElementById('mainDesc').innerHTML = currentLang === 'es' ? 'Configuración de pros y calendario oficial RLCS 2026' : 'Pro settings and official RLCS 2026 schedule';
-            document.getElementById('badgeText').innerHTML = currentLang === 'es' ? '🔥 Datos oficiales' : '🔥 Official data';
-            document.getElementById('prosTitle').innerHTML = currentLang === 'es' ? '👑 Configuración de Pros' : '👑 Pro Players Settings';
-            document.getElementById('camTitle').innerHTML = currentLang === 'es' ? '📷 Configuración de Cámara' : '📷 Camera Settings';
-            document.getElementById('controlsTitle').innerHTML = currentLang === 'es' ? '🎮 Controles' : '🎮 Controls';
-            document.getElementById('videoTitle').innerHTML = currentLang === 'es' ? '🖥️ Video' : '🖥️ Video Settings';
-            document.getElementById('tipsTitle').innerHTML = currentLang === 'es' ? '💡 Consejos para mejorar' : '💡 Improvement Tips';
-            document.getElementById('actionCol').innerHTML = currentLang === 'es' ? 'Acción' : 'Action';
-            document.getElementById('keyCol').innerHTML = currentLang === 'es' ? 'Tecla' : 'Key';
-            document.getElementById('whyCol').innerHTML = currentLang === 'es' ? 'Por qué' : 'Why';
-            document.getElementById('eventsTitle').innerHTML = currentLang === 'es' ? '📅 Próximos Eventos' : '📅 Upcoming Events';
+            // Actualizar botones de navegación
+            document.getElementById('navPros').innerHTML = translationsData[currentLang].navPros;
+            document.getElementById('navCamara').innerHTML = translationsData[currentLang].navCamara;
+            document.getElementById('navControles').innerHTML = translationsData[currentLang].navControles;
+            document.getElementById('navVideo').innerHTML = translationsData[currentLang].navVideo;
+            document.getElementById('navConsejos').innerHTML = translationsData[currentLang].navConsejos;
             
+            // Actualizar títulos
+            document.getElementById('eventsTitle').innerHTML = translationsData[currentLang].eventsTitle;
+            document.getElementById('mainTitle').innerHTML = translationsData[currentLang].mainTitle;
+            document.getElementById('mainDesc').innerHTML = translationsData[currentLang].mainDesc;
+            document.getElementById('badgeText').innerHTML = translationsData[currentLang].badgeText;
+            document.getElementById('prosTitle').innerHTML = translationsData[currentLang].prosTitle;
+            document.getElementById('camTitle').innerHTML = translationsData[currentLang].camTitle;
+            document.getElementById('controlsTitle').innerHTML = translationsData[currentLang].controlsTitle;
+            document.getElementById('videoTitle').innerHTML = translationsData[currentLang].videoTitle;
+            document.getElementById('tipsTitle').innerHTML = translationsData[currentLang].tipsTitle;
+            document.getElementById('actionCol').innerHTML = translationsData[currentLang].actionCol;
+            document.getElementById('keyCol').innerHTML = translationsData[currentLang].keyCol;
+            document.getElementById('whyCol').innerHTML = translationsData[currentLang].whyCol;
+            
+            // Botones de tema e idioma
             const themeBtn = document.getElementById('themeBtn');
             const isDark = document.body.classList.contains('dark');
             themeBtn.innerHTML = isDark ? (currentLang === 'es' ? '☀️ Modo Claro' : '☀️ Light Mode') : (currentLang === 'es' ? '🌙 Modo Oscuro' : '🌙 Dark Mode');
