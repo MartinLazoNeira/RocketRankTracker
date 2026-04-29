@@ -25,6 +25,7 @@
             --modal-bg: white;
             --modal-text: #333;
             --clock-bg: rgba(0,0,0,0.5);
+            --selector-bg: #f0f0f0;
         }
 
         body.dark {
@@ -39,6 +40,7 @@
             --modal-bg: #2a2a3a;
             --modal-text: #e0e0e0;
             --clock-bg: rgba(0,0,0,0.7);
+            --selector-bg: #3a3a4a;
         }
 
         body {
@@ -346,6 +348,51 @@
             padding-left: 15px;
         }
 
+        /* Selector de controles */
+        .controls-selector {
+            background: var(--selector-bg);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .controls-selector h3 {
+            color: #FF5E00;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .selector-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .selector-group label {
+            font-weight: bold;
+        }
+
+        .selector-group select {
+            padding: 8px 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .current-setting {
+            display: inline-block;
+            background: #FF5E00;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-family: monospace;
+        }
+
         .pros-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -482,6 +529,10 @@
             .header h1 {
                 font-size: 1.3em;
             }
+            .selector-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
@@ -541,6 +592,25 @@
             <div id="controles" class="tab-content">
                 <div class="card">
                     <h2 id="controlsTitle">🎮 Controles</h2>
+                    
+                    <!-- Selector de configuración de controles -->
+                    <div class="controls-selector">
+                        <h3>⚙️ Personalizar controles</h3>
+                        <div class="selector-group">
+                            <label>🎯 Derrape / Air Roll:</label>
+                            <select id="driftSelect" onchange="updateControls()">
+                                <option value="Square/X">Square/X (Predeterminado)</option>
+                                <option value="L1/LB">L1/LB (Air Roll Izquierdo)</option>
+                            </select>
+                            <span class="current-setting" id="driftCurrent">Seleccionado: Square/X</span>
+                        </div>
+                        <div class="selector-group" style="margin-top: 10px;">
+                            <label>💨 Boost:</label>
+                            <span class="current-setting">Circle/B (Fijo)</span>
+                            <span style="font-size: 0.8em; color: var(--text-secondary);">(Recomendado por pros)</span>
+                        </div>
+                    </div>
+                    
                     <table class="controls-table">
                         <thead><tr><th id="actionCol">Acción</th><th id="keyCol">Tecla</th><th id="whyCol">Por qué</th></tr></thead>
                         <tbody id="controlsBody"></tbody>
@@ -591,6 +661,53 @@
         }
         
         setInterval(updateRealClock, 1000);
+        
+        // ==================== CONFIGURACIÓN DE CONTROLES DINÁMICOS ====================
+        let currentDriftKey = "Square/X"; // Valor por defecto
+        
+        // Base de controles (sin las teclas dinámicas)
+        const controlsBase = {
+            es: [
+                { action: "Acelerar", key: "R2/RT", why: "Respuesta proporcional" },
+                { action: "Frenar / Marcha atrás", key: "L2/LT", why: "Control progresivo" },
+                { action: "Saltar", key: "X/A", why: "Acceso rápido" },
+                { action: "Boost", key: "Circle/B", why: "Permite saltar y boostear juntos (configuración óptima)" },
+                { action: "Derrape / Rotación", key: "", why: "Estándar cómodo - Usado para half-flips" },
+                { action: "Rotación Aérea Izquierda", key: "L1/LB", why: "Air roll izquierdo" },
+                { action: "Rotación Aérea Derecha", key: "R1/RB", why: "Air roll derecho" }
+            ],
+            en: [
+                { action: "Accelerate", key: "R2/RT", why: "Proportional response" },
+                { action: "Brake / Reverse", key: "L2/LT", why: "Progressive control" },
+                { action: "Jump", key: "X/A", why: "Quick access" },
+                { action: "Boost", key: "Circle/B", why: "Allows jumping and boosting together (optimal setup)" },
+                { action: "Drift / Air Roll", key: "", why: "Standard comfortable - Used for half-flips" },
+                { action: "Air Roll Left", key: "L1/LB", why: "Left air roll" },
+                { action: "Air Roll Right", key: "R1/RB", why: "Right air roll" }
+            ]
+        };
+        
+        function updateControls() {
+            const driftSelect = document.getElementById('driftSelect');
+            if (driftSelect) {
+                currentDriftKey = driftSelect.value;
+                document.getElementById('driftCurrent').innerHTML = `Seleccionado: ${currentDriftKey}`;
+            }
+            loadControls();
+        }
+        
+        function loadControls() {
+            const body = document.getElementById('controlsBody');
+            const controls = JSON.parse(JSON.stringify(controlsBase[currentLang]));
+            
+            // Actualizar la tecla de Derrape con el valor seleccionado
+            controls[4].key = currentDriftKey;
+            
+            body.innerHTML = '';
+            controls.forEach(ctrl => {
+                body.innerHTML += `<tr><td>${ctrl.action}</td><td><span class="key-badge">${ctrl.key}</span></td><td>${ctrl.why}</td></tr>`;
+            });
+        }
         
         // ==================== DATOS DE EVENTOS ====================
         const eventsData = {
@@ -662,15 +779,6 @@
                     { name: "Rigidez (Stiffness)", value: "0.35 - 0.50", desc: "Movimiento de cámara con velocidad" },
                     { name: "Velocidad de giro", value: "3.00 - 4.00", desc: "Qué tan rápido gira la cámara" }
                 ],
-                controls: [
-                    { action: "Acelerar", key: "R2/RT", why: "Respuesta proporcional" },
-                    { action: "Frenar / Marcha atrás", key: "L2/LT", why: "Control progresivo" },
-                    { action: "Saltar", key: "X/A", why: "Acceso rápido" },
-                    { action: "Boost", key: "R1/RB", why: "Permite saltar y boostear juntos" },
-                    { action: "Derrape / Rotación", key: "Square/X", why: "Estándar cómodo" },
-                    { action: "Rotación Aérea Izquierda", key: "L1/LB", why: "Air roll izquierdo" },
-                    { action: "Rotación Aérea Derecha", key: "R1/RB", why: "Air roll derecho" }
-                ],
                 video: [
                     { name: "Resolución", value: "1920x1080", desc: "Nativa" },
                     { name: "Calidad de texturas", value: "Alta o Rendimiento", desc: "Balance calidad/FPS" },
@@ -715,15 +823,6 @@
                     { name: "Angle", value: "-3 to -5", desc: "Negative = lower camera angle" },
                     { name: "Stiffness", value: "0.35 - 0.50", desc: "How much camera moves with speed" },
                     { name: "Swivel Speed", value: "3.00 - 4.00", desc: "How fast camera turns" }
-                ],
-                controls: [
-                    { action: "Accelerate", key: "R2/RT", why: "Proportional response" },
-                    { action: "Brake / Reverse", key: "L2/LT", why: "Progressive control" },
-                    { action: "Jump", key: "X/A", why: "Quick access" },
-                    { action: "Boost", key: "R1/RB", why: "Allows jumping and boosting together" },
-                    { action: "Drift / Air Roll", key: "Square/X", why: "Standard comfortable" },
-                    { action: "Air Roll Left", key: "L1/LB", why: "Left air roll" },
-                    { action: "Air Roll Right", key: "R1/RB", why: "Right air roll" }
                 ],
                 video: [
                     { name: "Resolution", value: "1920x1080", desc: "Native" },
@@ -838,16 +937,6 @@
             });
         }
 
-        // ==================== CARGAR CONTROLES ====================
-        function loadControls() {
-            const body = document.getElementById('controlsBody');
-            const controls = translationsData[currentLang].controls;
-            body.innerHTML = '';
-            controls.forEach(ctrl => {
-                body.innerHTML += `<tr><td>${ctrl.action}</td><td><span class="key-badge">${ctrl.key}</span></td><td>${ctrl.why}</td></tr>`;
-            });
-        }
-
         // ==================== CARGAR VIDEO ====================
         function loadVideoSettings() {
             const container = document.getElementById('videoSettings');
@@ -870,14 +959,12 @@
 
         // ==================== ACTUALIZAR TEXTOS DE INTERFAZ ====================
         function updateUITexts() {
-            // Actualizar botones de navegación
             document.getElementById('navPros').innerHTML = translationsData[currentLang].navPros;
             document.getElementById('navCamara').innerHTML = translationsData[currentLang].navCamara;
             document.getElementById('navControles').innerHTML = translationsData[currentLang].navControles;
             document.getElementById('navVideo').innerHTML = translationsData[currentLang].navVideo;
             document.getElementById('navConsejos').innerHTML = translationsData[currentLang].navConsejos;
             
-            // Actualizar títulos
             document.getElementById('eventsTitle').innerHTML = translationsData[currentLang].eventsTitle;
             document.getElementById('mainTitle').innerHTML = translationsData[currentLang].mainTitle;
             document.getElementById('mainDesc').innerHTML = translationsData[currentLang].mainDesc;
@@ -891,13 +978,15 @@
             document.getElementById('keyCol').innerHTML = translationsData[currentLang].keyCol;
             document.getElementById('whyCol').innerHTML = translationsData[currentLang].whyCol;
             
-            // Botones de tema e idioma
             const themeBtn = document.getElementById('themeBtn');
             const isDark = document.body.classList.contains('dark');
             themeBtn.innerHTML = isDark ? (currentLang === 'es' ? '☀️ Modo Claro' : '☀️ Light Mode') : (currentLang === 'es' ? '🌙 Modo Oscuro' : '🌙 Dark Mode');
             
             const langBtn = document.getElementById('langBtn');
             langBtn.innerHTML = currentLang === 'es' ? '🇪🇸 Español' : '🇺🇸 English';
+            
+            // Actualizar texto del selector
+            document.getElementById('driftCurrent').innerHTML = `Seleccionado: ${currentDriftKey}`;
         }
 
         // ==================== CARGAR TODO ====================
@@ -942,11 +1031,30 @@
         });
 
         // ==================== INICIALIZAR ====================
+        // Cargar selector guardado de localStorage si existe
+        const savedDrift = localStorage.getItem('rocketDriftKey');
+        if (savedDrift) {
+            currentDriftKey = savedDrift;
+            const driftSelect = document.getElementById('driftSelect');
+            if (driftSelect) driftSelect.value = savedDrift;
+        }
+        
         loadAllContent();
         setInterval(() => {
             loadEvents();
             updateRealClock();
         }, 60000);
+        
+        // Guardar preferencia del selector
+        window.updateControls = function() {
+            const driftSelect = document.getElementById('driftSelect');
+            if (driftSelect) {
+                currentDriftKey = driftSelect.value;
+                localStorage.setItem('rocketDriftKey', currentDriftKey);
+                document.getElementById('driftCurrent').innerHTML = `Seleccionado: ${currentDriftKey}`;
+            }
+            loadControls();
+        };
     </script>
 </body>
 </html>
