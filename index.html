@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50%' y='50%' text-anchor='middle' dy='.3em' font-size='80'>🚗</text></svg>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>RLProHub - Rocket League Pro Settings & Events</title>
     <style>
@@ -19,13 +18,14 @@
             --text-primary: #333;
             --text-secondary: #666;
             --border-color: #e0e0e0;
-            --sidebar-bg: rgba(0, 0, 0, 0.3);
-            --sidebar-hover: rgba(255, 94, 0, 0.3);
+            --hero-bg: rgba(0, 0, 0, 0.3);
+            --feature-bg: rgba(255, 255, 255, 0.1);
+            --feature-hover: rgba(255, 94, 0, 0.3);
+            --clock-bg: rgba(0,0,0,0.5);
             --event-card-bg: #f8f9fa;
             --event-border: #FF5E00;
             --modal-bg: white;
             --modal-text: #333;
-            --clock-bg: rgba(0,0,0,0.5);
             --selector-bg: #f0f0f0;
             --search-bg: white;
         }
@@ -37,11 +37,13 @@
             --text-primary: #e0e0e0;
             --text-secondary: #aaa;
             --border-color: #444;
-            --sidebar-bg: rgba(0, 0, 0, 0.5);
+            --hero-bg: rgba(0, 0, 0, 0.5);
+            --feature-bg: rgba(255, 255, 255, 0.05);
+            --feature-hover: rgba(255, 94, 0, 0.4);
+            --clock-bg: rgba(0,0,0,0.7);
             --event-card-bg: #2a2a3a;
             --modal-bg: #2a2a3a;
             --modal-text: #e0e0e0;
-            --clock-bg: rgba(0,0,0,0.7);
             --selector-bg: #3a3a4a;
             --search-bg: #2a2a3a;
         }
@@ -53,216 +55,230 @@
             transition: all 0.3s ease;
         }
 
-        .hamburger-btn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
-            border: none;
-            color: white;
-            font-size: 28px;
-            cursor: pointer;
-            padding: 10px 15px;
-            border-radius: 12px;
-            display: none;
-            transition: all 0.3s;
-        }
-
-        .hamburger-btn:hover {
-            background: #FF5E00;
-        }
-
-        .app-wrapper {
+        /* Navbar */
+        .navbar {
             display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            width: 280px;
-            background: var(--sidebar-bg);
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
-            padding: 20px;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            border-right: 2px solid rgba(255, 94, 0, 0.3);
-            transition: all 0.3s;
-            z-index: 10;
-        }
-
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
+            position: sticky;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 9;
-        }
-
-        .sidebar-header {
-            text-align: center;
-            padding: 20px 0;
-            border-bottom: 2px solid #FF5E00;
-            margin-bottom: 20px;
-        }
-
-        .sidebar-header h2 {
-            color: white;
-            font-size: 1.3em;
-        }
-
-        .sidebar-header p {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.8em;
-            margin-top: 5px;
-        }
-
-        .real-clock {
-            background: var(--clock-bg);
-            border-radius: 15px;
-            padding: 12px;
-            text-align: center;
-            margin-bottom: 20px;
-            backdrop-filter: blur(5px);
-        }
-
-        .real-clock .date {
-            color: white;
-            font-size: 0.8em;
-            opacity: 0.8;
-        }
-
-        .real-clock .time {
-            color: #FF5E00;
-            font-size: 1.4em;
-            font-weight: bold;
-            font-family: monospace;
-            letter-spacing: 2px;
-        }
-
-        .sidebar-controls {
-            display: flex;
+            z-index: 100;
+            flex-wrap: wrap;
             gap: 10px;
-            margin-bottom: 20px;
-            flex-direction: column;
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+        }
+
+        .logo span {
+            color: #FF5E00;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .home-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .home-btn:hover {
+            background: rgba(255, 94, 0, 0.6);
         }
 
         .theme-toggle, .lang-toggle {
             background: rgba(255, 255, 255, 0.2);
             border: none;
-            padding: 10px;
-            border-radius: 10px;
+            padding: 8px 16px;
+            border-radius: 25px;
             color: white;
             cursor: pointer;
             font-size: 0.9em;
             transition: all 0.3s;
-            width: 100%;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
+            gap: 5px;
         }
 
         .theme-toggle:hover, .lang-toggle:hover {
             background: rgba(255, 94, 0, 0.6);
         }
 
-        .nav-menu {
-            list-style: none;
+        .real-clock {
+            background: var(--clock-bg);
+            border-radius: 15px;
+            padding: 8px 15px;
+            text-align: center;
+            backdrop-filter: blur(5px);
         }
 
-        .nav-item {
+        .real-clock .date {
+            color: white;
+            font-size: 0.7em;
+            opacity: 0.8;
+        }
+
+        .real-clock .time {
+            color: #FF5E00;
+            font-size: 1em;
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        /* Views */
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.2em;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: #FF5E00;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+
+        /* Features Grid */
+        .features {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .feature-card {
+            background: var(--feature-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: var(--feature-hover);
+            border-color: #FF5E00;
+        }
+
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            color: white;
+            font-size: 1.5em;
             margin-bottom: 10px;
         }
 
-        .nav-btn {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            padding: 12px 15px;
-            border-radius: 12px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: left;
-            font-size: 1em;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .nav-btn:hover {
-            background: var(--sidebar-hover);
-            transform: translateX(5px);
-        }
-
-        .nav-btn.active {
-            background: #FF5E00;
-            color: white;
-        }
-
-        .events-sidebar {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid rgba(255, 94, 0, 0.3);
-        }
-
-        .events-sidebar h3 {
-            color: white;
-            font-size: 1.1em;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .event-card {
-            background: var(--event-card-bg);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 12px;
-            border-left: 4px solid var(--event-border);
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .event-card.past {
-            opacity: 0.8;
-            border-left-color: #888;
-        }
-
-        .event-card:hover {
-            transform: translateX(5px);
-            background: var(--sidebar-hover);
-        }
-
-        .event-name {
-            font-weight: bold;
-            color: var(--text-primary);
+        .feature-card p {
+            color: rgba(255, 255, 255, 0.8);
             font-size: 0.9em;
         }
 
-        .event-date {
-            font-size: 0.7em;
-            color: var(--text-secondary);
+        /* Events Preview */
+        .events-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .events-section h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .events-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .event-preview-card {
+            background: var(--feature-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid #FF5E00;
+        }
+
+        .event-preview-card:hover {
+            transform: translateX(5px);
+            background: var(--feature-hover);
+        }
+
+        .event-preview-card .event-name {
+            font-weight: bold;
+            color: white;
+            font-size: 1.1em;
+        }
+
+        .event-preview-card .event-date {
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.7);
             margin: 5px 0;
         }
 
-        .event-location {
-            font-size: 0.7em;
-            color: #FF5E00;
-            font-weight: bold;
-        }
-
         .event-status {
-            font-size: 0.65em;
-            margin-top: 5px;
             display: inline-block;
-            padding: 2px 8px;
-            border-radius: 10px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7em;
+            margin-top: 8px;
         }
 
         .status-upcoming {
@@ -275,68 +291,8 @@
             color: white;
         }
 
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--modal-bg);
-            color: var(--modal-text);
-            border-radius: 20px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            padding: 25px;
-            position: relative;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #FF5E00;
-        }
-
-        .modal-header h2 {
-            color: #FF5E00;
-            font-size: 1.5em;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 2em;
-            cursor: pointer;
-            color: var(--text-secondary);
-        }
-
-        .modal-close:hover {
-            color: #FF5E00;
-        }
-
-        .main-content {
-            margin-left: 280px;
-            flex: 1;
-            padding: 20px;
-        }
-
-        .header {
+        /* Content Sections */
+        .content-header {
             text-align: center;
             color: white;
             margin-bottom: 30px;
@@ -345,192 +301,9 @@
             border-radius: 20px;
         }
 
-        .header h1 {
+        .content-header h1 {
             font-size: 2em;
             margin-bottom: 10px;
-        }
-
-        .badge {
-            display: inline-block;
-            background: #FF5E00;
-            padding: 5px 15px;
-            border-radius: 50px;
-            font-size: 0.8em;
-            margin-top: 10px;
-        }
-
-        /* Buscador de pros */
-        .search-section {
-            margin-bottom: 25px;
-        }
-
-        .search-box-pros {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-
-        .search-input {
-            flex: 1;
-            padding: 12px 20px;
-            border-radius: 50px;
-            border: none;
-            background: var(--search-bg);
-            color: var(--text-primary);
-            font-size: 1em;
-            outline: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .search-input::placeholder {
-            color: var(--text-secondary);
-        }
-
-        .search-btn {
-            background: #FF5E00;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .search-btn:hover {
-            background: #004DE5;
-            transform: scale(1.02);
-        }
-
-        .suggest-btn {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .suggest-btn:hover {
-            background: #218838;
-            transform: scale(1.02);
-        }
-
-        .view-suggestions-btn {
-            background: #17a2b8;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            margin-top: 10px;
-            width: 100%;
-        }
-
-        .view-suggestions-btn:hover {
-            background: #138496;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 40px;
-            background: var(--event-card-bg);
-            border-radius: 15px;
-            margin-top: 20px;
-        }
-
-        .no-results p {
-            margin-bottom: 15px;
-        }
-
-        .suggest-form, .suggestions-list {
-            margin-top: 20px;
-            padding: 20px;
-            background: var(--selector-bg);
-            border-radius: 15px;
-            display: none;
-        }
-
-        .suggest-form.show, .suggestions-list.show {
-            display: block;
-        }
-
-        .suggest-form input, .suggest-form textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            background: var(--search-bg);
-            color: var(--text-primary);
-        }
-
-        .suggest-form textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .submit-suggest {
-            background: #FF5E00;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-
-        .suggestion-item {
-            background: var(--event-card-bg);
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            border-left: 3px solid #FF5E00;
-        }
-
-        .suggestion-name {
-            font-weight: bold;
-            color: #FF5E00;
-        }
-
-        .suggestion-team {
-            font-size: 0.85em;
-            color: var(--text-secondary);
-        }
-
-        .suggestion-reason {
-            font-size: 0.8em;
-            margin-top: 5px;
-            color: var(--text-primary);
-        }
-
-        .suggestion-date {
-            font-size: 0.7em;
-            color: var(--text-secondary);
-            margin-top: 5px;
-        }
-
-        .delete-suggestion {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.7em;
-            margin-top: 5px;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
         }
 
         .card {
@@ -549,50 +322,7 @@
             padding-left: 15px;
         }
 
-        .controls-selector {
-            background: var(--selector-bg);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .controls-selector h3 {
-            color: #FF5E00;
-            margin-bottom: 10px;
-            font-size: 1em;
-        }
-
-        .selector-group {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-top: 10px;
-        }
-
-        .selector-group label {
-            font-weight: bold;
-        }
-
-        .selector-group select {
-            padding: 8px 15px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            background: var(--card-bg);
-            color: var(--text-primary);
-            cursor: pointer;
-        }
-
-        .current-setting {
-            display: inline-block;
-            background: #FF5E00;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-family: monospace;
-        }
-
+        /* Pros Grid */
         .pros-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -649,6 +379,7 @@
             font-weight: bold;
         }
 
+        /* Settings Grid */
         .settings-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -659,7 +390,7 @@
             background: var(--event-card-bg);
             padding: 15px;
             border-radius: 15px;
-            border-left: 4px solid var(--event-border);
+            border-left: 4px solid #FF5E00;
         }
 
         .setting-name {
@@ -680,6 +411,7 @@
             line-height: 1.4;
         }
 
+        /* Controls Table */
         .controls-table {
             width: 100%;
             border-collapse: collapse;
@@ -707,50 +439,242 @@
             font-size: 0.85em;
         }
 
+        /* Controls Selector */
+        .controls-selector {
+            background: var(--selector-bg);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .selector-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .selector-group select {
+            padding: 8px 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .current-setting {
+            display: inline-block;
+            background: #FF5E00;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+        }
+
+        /* Search Section */
+        .search-section {
+            margin-bottom: 25px;
+        }
+
+        .search-box-pros {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 50px;
+            border: none;
+            background: var(--search-bg);
+            color: var(--text-primary);
+            font-size: 1em;
+            outline: none;
+        }
+
+        .search-btn, .suggest-btn {
+            padding: 12px 25px;
+            border-radius: 50px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .search-btn {
+            background: #FF5E00;
+            color: white;
+        }
+
+        .suggest-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .view-suggestions-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .suggest-form, .suggestions-list {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--selector-bg);
+            border-radius: 15px;
+            display: none;
+        }
+
+        .suggest-form.show, .suggestions-list.show {
+            display: block;
+        }
+
+        .suggest-form input, .suggest-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--search-bg);
+            color: var(--text-primary);
+        }
+
+        .suggest-form textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .submit-suggest {
+            background: #FF5E00;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .suggestion-item {
+            background: var(--event-card-bg);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid #FF5E00;
+        }
+
+        .suggestion-name {
+            font-weight: bold;
+            color: #FF5E00;
+        }
+
+        .delete-suggestion {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.7em;
+            margin-top: 5px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            background: var(--event-card-bg);
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--modal-bg);
+            color: var(--modal-text);
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 25px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #FF5E00;
+        }
+
+        .modal-header h2 {
+            color: #FF5E00;
+            font-size: 1.5em;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8em;
+        }
+
         @media (max-width: 768px) {
-            .hamburger-btn {
-                display: block;
+            .navbar {
+                flex-direction: column;
             }
-            
-            .sidebar {
-                transform: translateX(-100%);
-                width: 280px;
-                position: fixed;
-                top: 0;
-                left: 0;
-                z-index: 100;
+            .hero h1 {
+                font-size: 2em;
             }
-            
-            .sidebar.open {
-                transform: translateX(0);
+            .features {
+                grid-template-columns: 1fr;
+                padding: 20px;
             }
-            
-            .sidebar-overlay.active {
-                display: block;
+            .events-preview {
+                grid-template-columns: 1fr;
             }
-            
-            .main-content {
-                margin-left: 0;
-                padding-top: 70px;
-            }
-            
             .pros-grid {
                 grid-template-columns: 1fr;
             }
-            
             .settings-grid {
                 grid-template-columns: 1fr;
             }
-            
-            .header h1 {
-                font-size: 1.3em;
-            }
-            
-            .selector-group {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
             .search-box-pros {
                 flex-direction: column;
             }
@@ -758,135 +682,182 @@
     </style>
 </head>
 <body>
-    <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()">☰</button>
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-    
-    <div class="app-wrapper">
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <h2>⚡ RLProHub</h2>
-                <p>Pro Settings & Events</p>
-            </div>
-            
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo" onclick="showView('landing')">RL<span>ProHub</span></div>
+        <div class="nav-controls">
             <div class="real-clock">
                 <div class="date" id="realDate"></div>
                 <div class="time" id="realTime"></div>
             </div>
-            
-            <div class="sidebar-controls">
-                <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙 Modo Oscuro</button>
-                <button class="lang-toggle" id="langBtn" onclick="toggleLanguage()">🇪🇸 Español</button>
+            <button class="home-btn" onclick="showView('landing')">🏠 <span id="homeText">Inicio</span></button>
+            <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙</button>
+            <button class="lang-toggle" id="langBtn" onclick="toggleLanguage()">🇪🇸</button>
+        </div>
+    </div>
+
+    <!-- ==================== LANDING VIEW ==================== -->
+    <div id="landingView" class="view active">
+        <div class="hero">
+            <h1 id="heroTitle">🏆 RLProHub</h1>
+            <p id="heroDesc">Your ultimate hub for Rocket League pro settings, controls, events and more</p>
+            <div class="hero-badge" id="heroBadge">🔥 Pro Settings Database</div>
+        </div>
+
+        <div class="features">
+            <div class="feature-card" onclick="showView('pros')">
+                <div class="feature-icon">👑</div>
+                <h3 id="featureProsTitle">Pro Players</h3>
+                <p id="featureProsDesc">Settings from the best Rocket League players</p>
             </div>
-            
-            <ul class="nav-menu">
-                <li class="nav-item"><button class="nav-btn active" id="navPros" onclick="showTab('pros', this)">👑 Pro Players</button></li>
-                <li class="nav-item"><button class="nav-btn" id="navCamara" onclick="showTab('camara', this)">📷 Cámara</button></li>
-                <li class="nav-item"><button class="nav-btn" id="navControles" onclick="showTab('controles', this)">🎮 Controles</button></li>
-                <li class="nav-item"><button class="nav-btn" id="navVideo" onclick="showTab('video', this)">🖥️ Video</button></li>
-                <li class="nav-item"><button class="nav-btn" id="navConsejos" onclick="showTab('consejos', this)">💡 Consejos</button></li>
-            </ul>
-            
-            <div class="events-sidebar">
-                <h3 id="eventsTitle">📅 Próximos Eventos</h3>
-                <div id="eventsList"></div>
+            <div class="feature-card" onclick="showView('camara')">
+                <div class="feature-icon">📷</div>
+                <h3 id="featureCamTitle">Camera Settings</h3>
+                <p id="featureCamDesc">Recommended camera configurations from pros</p>
+            </div>
+            <div class="feature-card" onclick="showView('controles')">
+                <div class="feature-icon">🎮</div>
+                <h3 id="featureControlsTitle">Controls</h3>
+                <p id="featureControlsDesc">Customize your keybindings</p>
+            </div>
+            <div class="feature-card" onclick="showView('video')">
+                <div class="feature-icon">🖥️</div>
+                <h3 id="featureVideoTitle">Video Settings</h3>
+                <p id="featureVideoDesc">Optimize your performance</p>
+            </div>
+            <div class="feature-card" onclick="showView('consejos')">
+                <div class="feature-icon">💡</div>
+                <h3 id="featureTipsTitle">Pro Tips</h3>
+                <p id="featureTipsDesc">Improve your game with expert advice</p>
+            </div>
+            <div class="feature-card" onclick="showView('eventos')">
+                <div class="feature-icon">📅</div>
+                <h3 id="featureEventsTitle">RLCS Events</h3>
+                <p id="featureEventsDesc">Official tournament calendar</p>
             </div>
         </div>
-        
-        <div class="main-content">
-            <div class="header">
-                <h1 id="mainTitle">🏆 RLProHub</h1>
-                <p id="mainDesc">Configuración de pros y calendario oficial RLCS 2026</p>
-                <div class="badge" id="badgeText">🔥 Datos oficiales</div>
-            </div>
-            
-            <div id="pros" class="tab-content active">
-                <div class="card">
-                    <h2 id="prosTitle">👑 Configuración de Pros</h2>
-                    
-                    <div class="search-section">
-                        <div class="search-box-pros">
-                            <input type="text" id="proSearchInput" class="search-input" id="searchPlaceholder" onkeyup="searchPro()">
-                            <button class="search-btn" id="searchBtnText" onclick="searchPro()">🔍 Buscar</button>
-                            <button class="suggest-btn" id="suggestBtnText" onclick="toggleSuggestForm()">➕ Sugerir jugador</button>
-                        </div>
-                        
-                        <button class="view-suggestions-btn" id="viewSuggestionsBtn" onclick="toggleSuggestionsList()">📋 Ver sugerencias de jugadores</button>
-                        
-                        <div id="suggestForm" class="suggest-form">
-                            <h3 id="suggestFormTitle">📝 Sugerir nuevo jugador pro</h3>
-                            <input type="text" id="suggestName" id="suggestNamePlaceholder" placeholder="Nombre del jugador">
-                            <input type="text" id="suggestTeam" id="suggestTeamPlaceholder" placeholder="Equipo">
-                            <textarea id="suggestReason" id="suggestReasonPlaceholder" placeholder="¿Por qué debería agregarse? (opcional)"></textarea>
-                            <button class="submit-suggest" id="submitSuggestText" onclick="submitSuggestion()">📨 Enviar sugerencia</button>
-                        </div>
-                        
-                        <div id="suggestionsList" class="suggestions-list">
-                            <h3 id="suggestionsListTitle">📋 Sugerencias enviadas</h3>
-                            <div id="suggestionsContainer"></div>
-                            <button class="submit-suggest" style="background: #dc3545; margin-top: 10px;" id="clearSuggestionsText" onclick="clearAllSuggestions()">🗑️ Borrar todas las sugerencias</button>
-                        </div>
-                    </div>
-                    
-                    <div id="prosCount" style="margin-bottom: 10px; color: var(--text-secondary);"></div>
-                    <div class="pros-grid" id="prosGrid"></div>
-                    <div id="noResultsMsg" style="display: none; text-align: center; padding: 40px; background: var(--event-card-bg); border-radius: 15px; margin-top: 20px;">
-                        <p id="noResultsText">❌ No se encontró el jugador</p>
-                        <p id="noResultsSuggestionText" style="font-size: 0.9em;">¿Quieres sugerir que agreguemos a este jugador? Usa el botón "Sugerir jugador"</p>
-                    </div>
+
+        <div class="events-section">
+            <h2 id="eventsSectionTitle">📅 Próximos Eventos</h2>
+            <div class="events-preview" id="eventsPreview"></div>
+        </div>
+
+        <div class="footer">
+            <p id="footerText">© 2026 RLProHub - Rocket League Pro Settings & Events</p>
+        </div>
+    </div>
+
+    <!-- ==================== PROS VIEW ==================== -->
+    <div id="prosView" class="view">
+        <div class="content-header">
+            <h1 id="prosTitle">👑 Configuración de Pros</h1>
+            <p id="prosDesc">Datos de jugadores destacados de la RLCS</p>
+        </div>
+        <div class="card">
+            <div class="search-section">
+                <div class="search-box-pros">
+                    <input type="text" id="proSearchInput" class="search-input" placeholder="🔍 Buscar jugador pro...">
+                    <button class="search-btn" onclick="searchPro()">🔍 Buscar</button>
+                    <button class="suggest-btn" onclick="toggleSuggestForm()">➕ Sugerir jugador</button>
+                </div>
+                <button class="view-suggestions-btn" onclick="toggleSuggestionsList()">📋 Ver sugerencias de jugadores</button>
+                <div id="suggestForm" class="suggest-form">
+                    <h3>📝 Sugerir nuevo jugador pro</h3>
+                    <input type="text" id="suggestName" placeholder="Nombre del jugador">
+                    <input type="text" id="suggestTeam" placeholder="Equipo">
+                    <textarea id="suggestReason" placeholder="¿Por qué debería agregarse? (opcional)"></textarea>
+                    <button class="submit-suggest" onclick="submitSuggestion()">📨 Enviar sugerencia</button>
+                </div>
+                <div id="suggestionsList" class="suggestions-list">
+                    <h3>📋 Sugerencias enviadas</h3>
+                    <div id="suggestionsContainer"></div>
+                    <button class="submit-suggest" style="background: #dc3545; margin-top: 10px;" onclick="clearAllSuggestions()">🗑️ Borrar todas las sugerencias</button>
                 </div>
             </div>
-            
-            <div id="camara" class="tab-content">
-                <div class="card">
-                    <h2 id="camTitle">📷 Configuración de Cámara</h2>
-                    <div class="settings-grid" id="cameraSettings"></div>
-                </div>
-            </div>
-            
-            <div id="controles" class="tab-content">
-                <div class="card">
-                    <h2 id="controlsTitle">🎮 Controles</h2>
-                    
-                    <div class="controls-selector">
-                        <h3 id="customizeTitle">⚙️ Personalizar controles</h3>
-                        <div class="selector-group">
-                            <label id="driftLabel">🎯 Derrape / Air Roll:</label>
-                            <select id="driftSelect" onchange="updateControls()">
-                                <option value="Square/X">Square/X (Predeterminado)</option>
-                                <option value="L1/LB">L1/LB (Air Roll Izquierdo)</option>
-                            </select>
-                            <span class="current-setting" id="driftCurrent">Seleccionado: Square/X</span>
-                        </div>
-                        <div class="selector-group" style="margin-top: 10px;">
-                            <label id="boostLabel">💨 Boost:</label>
-                            <span class="current-setting">Circle/B (Fijo)</span>
-                            <span id="boostRecommended" style="font-size: 0.8em; color: var(--text-secondary);">(Recomendado por pros)</span>
-                        </div>
-                    </div>
-                    
-                    <table class="controls-table">
-                        <thead><tr><th id="actionCol">Acción</th><th id="keyCol">Tecla</th><th id="whyCol">Por qué</th></tr></thead>
-                        <tbody id="controlsBody"></tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <div id="video" class="tab-content">
-                <div class="card">
-                    <h2 id="videoTitle">🖥️ Video</h2>
-                    <div class="settings-grid" id="videoSettings"></div>
-                </div>
-            </div>
-            
-            <div id="consejos" class="tab-content">
-                <div class="card">
-                    <h2 id="tipsTitle">💡 Consejos para mejorar</h2>
-                    <div class="settings-grid" id="tipsGrid"></div>
-                </div>
+            <div id="prosCount" style="margin-bottom: 10px; color: var(--text-secondary);"></div>
+            <div class="pros-grid" id="prosGrid"></div>
+            <div id="noResultsMsg" style="display: none;" class="no-results">
+                <p>❌ No se encontró el jugador</p>
+                <p>¿Quieres sugerir que agreguemos a este jugador? Usa el botón "Sugerir jugador"</p>
             </div>
         </div>
     </div>
-    
+
+    <!-- ==================== CÁMARA VIEW ==================== -->
+    <div id="camaraView" class="view">
+        <div class="content-header">
+            <h1 id="camTitle">📷 Configuración de Cámara</h1>
+            <p id="camDesc">Valores recomendados basados en el promedio de jugadores profesionales</p>
+        </div>
+        <div class="card">
+            <div class="settings-grid" id="cameraSettings"></div>
+        </div>
+    </div>
+
+    <!-- ==================== CONTROLES VIEW ==================== -->
+    <div id="controlesView" class="view">
+        <div class="content-header">
+            <h1 id="controlsTitle">🎮 Controles</h1>
+            <p id="controlsDesc">Configuración óptima para mejorar tu mecánica</p>
+        </div>
+        <div class="card">
+            <div class="controls-selector">
+                <h3 id="customizeTitle">⚙️ Personalizar controles</h3>
+                <div class="selector-group">
+                    <label id="driftLabel">🎯 Derrape / Air Roll:</label>
+                    <select id="driftSelect" onchange="updateControls()">
+                        <option value="Square/X">Square/X (Predeterminado)</option>
+                        <option value="L1/LB">L1/LB (Air Roll Izquierdo)</option>
+                    </select>
+                    <span class="current-setting" id="driftCurrent">Seleccionado: Square/X</span>
+                </div>
+                <div class="selector-group">
+                    <label id="boostLabel">💨 Boost:</label>
+                    <span class="current-setting">Circle/B (Fijo)</span>
+                    <span id="boostRecommended" style="font-size: 0.8em; color: var(--text-secondary);">(Recomendado por pros)</span>
+                </div>
+            </div>
+            <table class="controls-table">
+                <thead><tr><th id="actionCol">Acción</th><th id="keyCol">Tecla</th><th id="whyCol">Por qué</th></tr></thead>
+                <tbody id="controlsBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ==================== VIDEO VIEW ==================== -->
+    <div id="videoView" class="view">
+        <div class="content-header">
+            <h1 id="videoTitle">🖥️ Video</h1>
+            <p id="videoDesc">Optimización para máximo rendimiento (mínimo input lag)</p>
+        </div>
+        <div class="card">
+            <div class="settings-grid" id="videoSettings"></div>
+        </div>
+    </div>
+
+    <!-- ==================== CONSEJOS VIEW ==================== -->
+    <div id="consejosView" class="view">
+        <div class="content-header">
+            <h1 id="tipsTitle">💡 Consejos para mejorar</h1>
+            <p id="tipsDesc">Aprende de los mejores jugadores profesionales</p>
+        </div>
+        <div class="card">
+            <div class="settings-grid" id="tipsGrid"></div>
+        </div>
+    </div>
+
+    <!-- ==================== EVENTOS VIEW ==================== -->
+    <div id="eventosView" class="view">
+        <div class="content-header">
+            <h1 id="eventsViewTitle">📅 Calendario RLCS 2026</h1>
+            <p id="eventsViewDesc">Eventos oficiales de la temporada</p>
+        </div>
+        <div class="card">
+            <div class="settings-grid" id="eventsList"></div>
+        </div>
+    </div>
+
+    <!-- Modal -->
     <div id="eventModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -898,45 +869,11 @@
     </div>
 
     <script>
-        // ==================== FUNCIONES DEL SIDEBAR ====================
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('active');
-        }
-        
-        function closeSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.remove('open');
-            overlay.classList.remove('active');
-        }
-        
-        function closeSidebarOnMobile() {
-            if (window.innerWidth <= 768) {
-                closeSidebar();
-            }
-        }
-        
-        // ==================== RELOJ ====================
-        function updateRealClock() {
-            const now = new Date();
-            const optionsDate = { year: 'numeric', month: 'long', day: 'numeric' };
-            const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            
-            const dateStr = now.toLocaleDateString(currentLang === 'es' ? 'es-ES' : 'en-US', optionsDate);
-            const timeStr = now.toLocaleTimeString(currentLang === 'es' ? 'es-ES' : 'en-US', optionsTime);
-            
-            const dateElem = document.getElementById('realDate');
-            const timeElem = document.getElementById('realTime');
-            if (dateElem) dateElem.innerHTML = dateStr;
-            if (timeElem) timeElem.innerHTML = timeStr;
-        }
-        
-        setInterval(updateRealClock, 1000);
-        
-        // ==================== PROS DATA (15 jugadores) ====================
+        // ==================== VARIABLES GLOBALES ====================
+        let currentLang = 'es';
+        let currentDriftKey = "Square/X";
+
+        // ==================== PROS DATA ====================
         const prosData = {
             es: [
                 { name: "Zen", team: "Vitality", settings: { fov: 110, distance: 280, height: 100, angle: -3, stiffness: 0.4, deadzone: 0.05, sens_dir: 1.4, sens_air: 1.4 } },
@@ -974,9 +911,7 @@
             ]
         };
 
-        // ==================== CONTROLES DINÁMICOS ====================
-        let currentDriftKey = "Square/X";
-        
+        // ==================== CONTROLES ====================
         const controlsBase = {
             es: [
                 { action: "Acelerar", key: "R2/RT", why: "Respuesta proporcional" },
@@ -997,34 +932,8 @@
                 { action: "Air Roll Right", key: "R1/RB", why: "Right air roll" }
             ]
         };
-        
-        function updateControls() {
-            const driftSelect = document.getElementById('driftSelect');
-            if (driftSelect) {
-                currentDriftKey = driftSelect.value;
-                document.getElementById('driftCurrent').innerHTML = (currentLang === 'es' ? 'Seleccionado: ' : 'Selected: ') + currentDriftKey;
-                localStorage.setItem('rocketDriftKey', currentDriftKey);
-            }
-            loadControls();
-        }
-        
-        function loadControls() {
-            const body = document.getElementById('controlsBody');
-            const controls = JSON.parse(JSON.stringify(controlsBase[currentLang]));
-            controls[4].key = currentDriftKey;
-            
-            body.innerHTML = '';
-            controls.forEach(ctrl => {
-                body.innerHTML += `<tr><td>${ctrl.action}</td><td><span class="key-badge">${ctrl.key}</span></td><td>${ctrl.why}</td></tr>`;
-            });
-        }
-        
+
         // ==================== EVENTOS ====================
-        function isEventFinished(event) {
-            const now = new Date();
-            return now > event.dateEnd;
-        }
-        
         const eventsData = {
             es: [
                 { name: "RLCS Major 1 - Boston", date: "19-22 Febrero 2026", dateStart: new Date(2026, 1, 19), dateEnd: new Date(2026, 1, 22), location: "Boston, USA", prize: "$354,000", verified: true, desc: "Primer Major de la temporada 2026.", winner: "Gentle Mates", winnerScore: "4-1" },
@@ -1041,78 +950,278 @@
                 { name: "FIFAe World Cup", date: "December 2026", dateStart: new Date(2026, 11, 1), dateEnd: new Date(2026, 11, 31), location: "Riyadh, Saudi Arabia", prize: "TBA", verified: true, desc: "FIFA x Rocket League collab.", winner: null }
             ]
         };
-        
-        window.showEventDetails = function(eventJson) {
-            const event = eventJson;
-            const modal = document.getElementById('eventModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalBody = document.getElementById('modalBody');
-            
-            const isFinished = isEventFinished(event);
-            const statusText = isFinished ? (currentLang === 'es' ? '🏁 FINALIZADO' : '🏁 FINISHED') : (currentLang === 'es' ? '📅 PRÓXIMO' : '📅 UPCOMING');
-            const winnerHtml = event.winner && isFinished ? `<p><strong>🏆 Winner:</strong> ${event.winner} ${event.winnerScore ? `(${event.winnerScore})` : ''}</p>` : '';
-            
-            modalTitle.innerHTML = `🏆 ${event.name}`;
-            modalBody.innerHTML = `
-                <p><strong>📅 Date:</strong> ${event.date}</p>
-                <p><strong>📍 Location:</strong> ${event.location}</p>
-                <p><strong>💰 Prize:</strong> ${event.prize}</p>
-                <p><strong>✅ Verified:</strong> ${event.verified ? (currentLang === 'es' ? 'Yes' : 'Yes') : (currentLang === 'es' ? 'Pending' : 'Pending')}</p>
-                <p><strong>📖 Description:</strong> ${event.desc}</p>
-                ${winnerHtml}
-                <p><strong>📌 Status:</strong> <span style="color: ${isFinished ? '#FF5E00' : '#4CAF50'}; font-weight: bold;">${statusText}</span></p>
-            `;
-            modal.classList.add('show');
+
+        // ==================== TRADUCCIONES ====================
+        const translations = {
+            es: {
+                homeText: "Inicio",
+                heroTitle: "🏆 RLProHub",
+                heroDesc: "Tu centro definitivo para configuraciones de pros de Rocket League, controles, eventos y más",
+                heroBadge: "🔥 Base de datos de configuraciones Pro",
+                featureProsTitle: "Pro Players",
+                featureProsDesc: "Configuraciones de los mejores jugadores",
+                featureCamTitle: "Cámara",
+                featureCamDesc: "Configuración recomendada por pros",
+                featureControlsTitle: "Controles",
+                featureControlsDesc: "Personaliza tus teclas",
+                featureVideoTitle: "Video",
+                featureVideoDesc: "Optimiza tu rendimiento",
+                featureTipsTitle: "Consejos Pro",
+                featureTipsDesc: "Mejora tu juego",
+                featureEventsTitle: "Eventos RLCS",
+                featureEventsDesc: "Calendario oficial",
+                eventsSectionTitle: "📅 Próximos Eventos",
+                footerText: "© 2026 RLProHub - Configuraciones y eventos de Rocket League",
+                prosTitle: "👑 Configuración de Pros",
+                prosDesc: "Datos de jugadores destacados de la RLCS",
+                camTitle: "📷 Configuración de Cámara",
+                camDesc: "Valores recomendados basados en el promedio de jugadores profesionales",
+                controlsTitle: "🎮 Controles",
+                controlsDesc: "Configuración óptima para mejorar tu mecánica",
+                videoTitle: "🖥️ Video",
+                videoDesc: "Optimización para máximo rendimiento (mínimo input lag)",
+                tipsTitle: "💡 Consejos para mejorar",
+                tipsDesc: "Aprende de los mejores jugadores profesionales",
+                eventsViewTitle: "📅 Calendario RLCS 2026",
+                eventsViewDesc: "Eventos oficiales de la temporada",
+                actionCol: "Acción",
+                keyCol: "Tecla",
+                whyCol: "Por qué",
+                customizeTitle: "⚙️ Personalizar controles",
+                driftLabel: "🎯 Derrape / Air Roll:",
+                boostLabel: "💨 Boost:",
+                boostRecommended: "(Recomendado por pros)",
+                searchPlaceholder: "🔍 Buscar jugador pro...",
+                searchBtn: "🔍 Buscar",
+                suggestBtn: "➕ Sugerir jugador",
+                viewSuggestionsBtn: "📋 Ver sugerencias de jugadores",
+                suggestFormTitle: "📝 Sugerir nuevo jugador pro",
+                submitSuggest: "📨 Enviar sugerencia",
+                clearSuggestions: "🗑️ Borrar todas las sugerencias",
+                noResultsText: "❌ No se encontró el jugador",
+                noResultsSuggestionText: "¿Quieres sugerir que agreguemos a este jugador? Usa el botón 'Sugerir jugador'"
+            },
+            en: {
+                homeText: "Home",
+                heroTitle: "🏆 RLProHub",
+                heroDesc: "Your ultimate hub for Rocket League pro settings, controls, events and more",
+                heroBadge: "🔥 Pro Settings Database",
+                featureProsTitle: "Pro Players",
+                featureProsDesc: "Settings from the best players",
+                featureCamTitle: "Camera",
+                featureCamDesc: "Recommended by pros",
+                featureControlsTitle: "Controls",
+                featureControlsDesc: "Customize your keybindings",
+                featureVideoTitle: "Video",
+                featureVideoDesc: "Optimize your performance",
+                featureTipsTitle: "Pro Tips",
+                featureTipsDesc: "Improve your game",
+                featureEventsTitle: "RLCS Events",
+                featureEventsDesc: "Official calendar",
+                eventsSectionTitle: "📅 Upcoming Events",
+                footerText: "© 2026 RLProHub - Rocket League Settings & Events",
+                prosTitle: "👑 Pro Players Settings",
+                prosDesc: "Data from top RLCS players",
+                camTitle: "📷 Camera Settings",
+                camDesc: "Recommended values based on pro player averages",
+                controlsTitle: "🎮 Controls",
+                controlsDesc: "Optimal settings to improve your mechanics",
+                videoTitle: "🖥️ Video Settings",
+                videoDesc: "Optimization for maximum performance (minimum input lag)",
+                tipsTitle: "💡 Improvement Tips",
+                tipsDesc: "Learn from the best professional players",
+                eventsViewTitle: "📅 RLCS 2026 Calendar",
+                eventsViewDesc: "Official season events",
+                actionCol: "Action",
+                keyCol: "Key",
+                whyCol: "Why",
+                customizeTitle: "⚙️ Customize controls",
+                driftLabel: "🎯 Drift / Air Roll:",
+                boostLabel: "💨 Boost:",
+                boostRecommended: "(Recommended by pros)",
+                searchPlaceholder: "🔍 Search pro player...",
+                searchBtn: "🔍 Search",
+                suggestBtn: "➕ Suggest player",
+                viewSuggestionsBtn: "📋 View player suggestions",
+                suggestFormTitle: "📝 Suggest new pro player",
+                submitSuggest: "📨 Submit suggestion",
+                clearSuggestions: "🗑️ Clear all suggestions",
+                noResultsText: "❌ Player not found",
+                noResultsSuggestionText: "Want to suggest we add this player? Use the 'Suggest player' button"
+            }
         };
-        
-        window.closeModal = function() {
-            document.getElementById('eventModal').classList.remove('show');
+
+        // ==================== DATOS ESTÁTICOS ====================
+        const cameraData = {
+            es: [
+                { name: "Campo de visión (FOV)", value: "110", desc: "Máximo permitido. Mejor visión periférica" },
+                { name: "Distancia", value: "270 - 280", desc: "Balance entre ver el campo y controlar el coche" },
+                { name: "Altura", value: "90 - 110", desc: "Más altura = mejor visión del campo" },
+                { name: "Ángulo", value: "-3 a -5", desc: "Negativo = cámara más baja" },
+                { name: "Rigidez (Stiffness)", value: "0.35 - 0.50", desc: "Movimiento de cámara con velocidad" },
+                { name: "Velocidad de giro", value: "3.00 - 4.00", desc: "Qué tan rápido gira la cámara" }
+            ],
+            en: [
+                { name: "Field of View (FOV)", value: "110", desc: "Maximum allowed. Better peripheral vision" },
+                { name: "Distance", value: "270 - 280", desc: "Balance between field view and car control" },
+                { name: "Height", value: "90 - 110", desc: "Higher = better field vision" },
+                { name: "Angle", value: "-3 to -5", desc: "Negative = lower camera angle" },
+                { name: "Stiffness", value: "0.35 - 0.50", desc: "How much camera moves with speed" },
+                { name: "Swivel Speed", value: "3.00 - 4.00", desc: "How fast camera turns" }
+            ]
         };
-        
-        function loadEvents() {
+
+        const videoData = {
+            es: [
+                { name: "Resolución", value: "1920x1080", desc: "Nativa" },
+                { name: "Calidad de texturas", value: "Alta o Rendimiento", desc: "Balance calidad/FPS" },
+                { name: "Sombras", value: "Bajas o Apagadas", desc: "Mejora FPS" },
+                { name: "Desenfoque de movimiento", value: "Apagado", desc: "Reduce input lag" },
+                { name: "V-Sync", value: "Apagado", desc: "Reduce input lag drásticamente" },
+                { name: "FPS Límite", value: "250", desc: "O igual a tu monitor" }
+            ],
+            en: [
+                { name: "Resolution", value: "1920x1080", desc: "Native" },
+                { name: "Texture Quality", value: "High or Performance", desc: "Balance quality/FPS" },
+                { name: "Shadows", value: "Low or Off", desc: "Improves FPS" },
+                { name: "Motion Blur", value: "Off", desc: "Reduces input lag" },
+                { name: "V-Sync", value: "Off", desc: "Drastically reduces input lag" },
+                { name: "FPS Limit", value: "250", desc: "Or match your monitor" }
+            ]
+        };
+
+        const tipsData = {
+            es: [
+                { title: "🎯 Calentamiento", desc: "15 minutos en Free Play antes de ranked. Practica aires, dribles y recuperaciones." },
+                { title: "⚙️ Rotaciones", desc: "Nunca te quedes debajo del balón. Rota por el lado opuesto al balón tras tu toque." },
+                { title: "💪 Posicionamiento", desc: "En defensa, posícionate entre el balón y tu portería. En ataque, mantén espacio." },
+                { title: "🔋 Gestión de boost", desc: "Recoge pads pequeños (12 de boost). Nunca te quedes sin boost." },
+                { title: "🎮 Mecánicas básicas", desc: "Aprende: Half-flip, Wave dash, Fast aerial, Hook shot." },
+                { title: "📺 Ver repeticiones", desc: "Analiza tus partidas. Busca errores de posicionamiento, no de mecánica." },
+                { title: "🏋️ Entrenamiento", desc: "Usa los paquetes de entrenamiento personalizados. Hay cientos para cada habilidad." },
+                { title: "🧠 Mentalidad", desc: "No culpes a tus compañeros. Concéntrate en tu propio juego y mejora constante." }
+            ],
+            en: [
+                { title: "🎯 Warmup", desc: "15 minutes in Free Play before ranked. Practice aerials, dribbles, and recoveries." },
+                { title: "⚙️ Rotations", desc: "Never stay under the ball. Rotate to the far post after your touch." },
+                { title: "💪 Positioning", desc: "On defense, position between the ball and your goal. On offense, keep spacing." },
+                { title: "🔋 Boost Management", desc: "Collect small pads (12 boost). Never run out of boost." },
+                { title: "🎮 Basic Mechanics", desc: "Learn: Half-flip, Wave dash, Fast aerial, Hook shot." },
+                { title: "📺 Watch Replays", desc: "Analyze your matches. Look for positioning mistakes, not mechanical errors." },
+                { title: "🏋️ Training", desc: "Use custom training packs. There are hundreds for every skill." },
+                { title: "🧠 Mindset", desc: "Don't blame your teammates. Focus on your own game and constant improvement." }
+            ]
+        };
+
+        // ==================== FUNCIONES DE NAVEGACIÓN ====================
+        function showView(viewId) {
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById(viewId + 'View').classList.add('active');
+            window.scrollTo(0, 0);
+            
+            if (viewId === 'pros') {
+                loadPros(prosData[currentLang]);
+            } else if (viewId === 'camara') {
+                loadCameraSettings();
+            } else if (viewId === 'controles') {
+                loadControls();
+            } else if (viewId === 'video') {
+                loadVideoSettings();
+            } else if (viewId === 'consejos') {
+                loadTips();
+            } else if (viewId === 'eventos') {
+                loadFullEventsList();
+            }
+        }
+
+        // ==================== RELOJ ====================
+        function updateRealClock() {
+            const now = new Date();
+            const optionsDate = { year: 'numeric', month: 'long', day: 'numeric' };
+            const optionsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            const dateStr = now.toLocaleDateString(currentLang === 'es' ? 'es-ES' : 'en-US', optionsDate);
+            const timeStr = now.toLocaleTimeString(currentLang === 'es' ? 'es-ES' : 'en-US', optionsTime);
+            document.getElementById('realDate').innerHTML = dateStr;
+            document.getElementById('realTime').innerHTML = timeStr;
+        }
+        setInterval(updateRealClock, 1000);
+
+        // ==================== EVENTOS ====================
+        function isEventFinished(event) {
+            const now = new Date();
+            return now > event.dateEnd;
+        }
+
+        function loadEventsPreview() {
+            const container = document.getElementById('eventsPreview');
+            const events = eventsData[currentLang];
+            container.innerHTML = '';
+            events.slice(0, 3).forEach(event => {
+                const isFinished = isEventFinished(event);
+                const statusClass = isFinished ? 'status-finished' : 'status-upcoming';
+                const statusText = isFinished ? (currentLang === 'es' ? 'Finalizado' : 'Finished') : (currentLang === 'es' ? 'Próximo' : 'Upcoming');
+                container.innerHTML += `
+                    <div class="event-preview-card" onclick="showEventDetails(${JSON.stringify(event).replace(/"/g, '&quot;')})">
+                        <div class="event-name">🏆 ${event.name}</div>
+                        <div class="event-date">📅 ${event.date}</div>
+                        <div class="event-status ${statusClass}">${statusText}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function loadFullEventsList() {
             const container = document.getElementById('eventsList');
             const events = eventsData[currentLang];
             container.innerHTML = '';
             events.forEach(event => {
                 const isFinished = isEventFinished(event);
                 const statusClass = isFinished ? 'status-finished' : 'status-upcoming';
-                const statusText = isFinished ? '🏁 Finished' : '📅 Upcoming';
-                
+                const statusText = isFinished ? (currentLang === 'es' ? 'Finalizado' : 'Finished') : (currentLang === 'es' ? 'Próximo' : 'Upcoming');
                 container.innerHTML += `
-                    <div class="event-card ${isFinished ? 'past' : ''}" onclick="showEventDetails(${JSON.stringify(event).replace(/"/g, '&quot;')})">
-                        <div class="event-name">🏆 ${event.name}</div>
-                        <div class="event-date">📅 ${event.date}</div>
-                        <div class="event-location">📍 ${event.location}</div>
-                        <div class="event-status ${statusClass}">${statusText}</div>
-                        ${event.winner && isFinished ? `<div style="font-size:0.65em; color:#FF5E00; margin-top:5px;">🏆 Winner: ${event.winner}</div>` : ''}
+                    <div class="setting-item" style="cursor: pointer;" onclick="showEventDetails(${JSON.stringify(event).replace(/"/g, '&quot;')})">
+                        <div class="setting-name">${event.name}</div>
+                        <div class="setting-value">📅 ${event.date}</div>
+                        <div class="setting-desc">📍 ${event.location} | 💰 ${event.prize}</div>
+                        <div class="event-status ${statusClass}" style="margin-top: 10px;">${statusText}</div>
                     </div>
                 `;
             });
         }
-        
-        // ==================== FUNCIONES DE BÚSQUEDA Y SUGERENCIAS ====================
-        let currentPros = [...prosData.es];
-        
-        function loadPros(filteredPros = null) {
+
+        function showEventDetails(event) {
+            const modal = document.getElementById('eventModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            const isFinished = isEventFinished(event);
+            const statusText = isFinished ? (currentLang === 'es' ? '🏁 FINALIZADO' : '🏁 FINISHED') : (currentLang === 'es' ? '📅 PRÓXIMO' : '📅 UPCOMING');
+            const winnerHtml = event.winner && isFinished ? `<p><strong>🏆 Winner:</strong> ${event.winner} ${event.winnerScore ? `(${event.winnerScore})` : ''}</p>` : '';
+            modalTitle.innerHTML = `🏆 ${event.name}`;
+            modalBody.innerHTML = `
+                <p><strong>📅 Date:</strong> ${event.date}</p>
+                <p><strong>📍 Location:</strong> ${event.location}</p>
+                <p><strong>💰 Prize:</strong> ${event.prize}</p>
+                <p><strong>✅ Verified:</strong> ${event.verified ? (currentLang === 'es' ? 'Sí' : 'Yes') : (currentLang === 'es' ? 'Pendiente' : 'Pending')}</p>
+                <p><strong>📖 Description:</strong> ${event.desc}</p>
+                ${winnerHtml}
+                <p><strong>📌 Status:</strong> <span style="color: ${isFinished ? '#FF5E00' : '#4CAF50'}; font-weight: bold;">${statusText}</span></p>
+            `;
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('eventModal').classList.remove('show');
+        }
+
+        // ==================== PROS ====================
+        function loadPros(prosList) {
             const grid = document.getElementById('prosGrid');
-            const prosToShow = filteredPros || prosData[currentLang];
-            const prosCount = document.getElementById('prosCount');
-            
-            if (prosCount) {
-                prosCount.innerHTML = (currentLang === 'es' ? '📊 ' : '📊 ') + prosToShow.length + (currentLang === 'es' ? ' jugadores profesionales disponibles' : ' pro players available');
-            }
-            
-            const noResults = document.getElementById('noResultsMsg');
-            if (prosToShow.length === 0) {
-                if (noResults) noResults.style.display = 'block';
-                grid.innerHTML = '';
-                return;
-            }
-            
-            if (noResults) noResults.style.display = 'none';
-            
+            const count = document.getElementById('prosCount');
+            count.innerHTML = `📊 ${prosList.length} ${currentLang === 'es' ? 'jugadores profesionales disponibles' : 'pro players available'}`;
             grid.innerHTML = '';
-            prosToShow.forEach(pro => {
+            prosList.forEach(pro => {
                 grid.innerHTML += `<div class="pro-card">
                     <div class="pro-name">${pro.name}</div>
                     <div class="pro-team">${pro.team}</div>
@@ -1129,64 +1238,57 @@
                 </div>`;
             });
         }
-        
+
         function searchPro() {
-            const searchTerm = document.getElementById('proSearchInput').value.toLowerCase().trim();
-            
-            if (searchTerm === '') {
+            const term = document.getElementById('proSearchInput').value.toLowerCase().trim();
+            if (term === '') {
                 loadPros(prosData[currentLang]);
                 return;
             }
-            
             const filtered = prosData[currentLang].filter(pro => 
-                pro.name.toLowerCase().includes(searchTerm) || 
-                pro.team.toLowerCase().includes(searchTerm)
+                pro.name.toLowerCase().includes(term) || pro.team.toLowerCase().includes(term)
             );
-            
             loadPros(filtered);
         }
-        
+
+        // ==================== SUGERENCIAS ====================
         function toggleSuggestForm() {
             const form = document.getElementById('suggestForm');
             const list = document.getElementById('suggestionsList');
             if (list.classList.contains('show')) list.classList.remove('show');
             form.classList.toggle('show');
         }
-        
+
         function toggleSuggestionsList() {
             const list = document.getElementById('suggestionsList');
             const form = document.getElementById('suggestForm');
             if (form.classList.contains('show')) form.classList.remove('show');
             list.classList.toggle('show');
-            if (list.classList.contains('show')) {
-                loadSuggestions();
-            }
+            if (list.classList.contains('show')) loadSuggestions();
         }
-        
+
         function loadSuggestions() {
             const container = document.getElementById('suggestionsContainer');
             const suggestions = JSON.parse(localStorage.getItem('proSuggestions') || '[]');
-            
             if (suggestions.length === 0) {
                 container.innerHTML = '<p style="text-align:center; padding:20px;">' + (currentLang === 'es' ? 'No hay sugerencias aún' : 'No suggestions yet') + '</p>';
                 return;
             }
-            
             container.innerHTML = '';
-            suggestions.reverse().forEach((suggestion, index) => {
-                const date = new Date(suggestion.date).toLocaleDateString(currentLang === 'es' ? 'es-ES' : 'en-US');
+            suggestions.reverse().forEach((s, i) => {
+                const date = new Date(s.date).toLocaleDateString(currentLang === 'es' ? 'es-ES' : 'en-US');
                 container.innerHTML += `
-                    <div class="suggestion-item" data-index="${index}">
-                        <div class="suggestion-name">${suggestion.name}</div>
-                        <div class="suggestion-team">${suggestion.team}</div>
-                        ${suggestion.reason ? `<div class="suggestion-reason">💬 ${suggestion.reason}</div>` : ''}
+                    <div class="suggestion-item">
+                        <div class="suggestion-name">${s.name}</div>
+                        <div class="suggestion-team">${s.team}</div>
+                        ${s.reason ? `<div class="suggestion-reason">💬 ${s.reason}</div>` : ''}
                         <div class="suggestion-date">📅 ${date}</div>
-                        <button class="delete-suggestion" onclick="deleteSuggestion(${index})">🗑️ ${currentLang === 'es' ? 'Eliminar' : 'Delete'}</button>
+                        <button class="delete-suggestion" onclick="deleteSuggestion(${i})">🗑️ ${currentLang === 'es' ? 'Eliminar' : 'Delete'}</button>
                     </div>
                 `;
             });
         }
-        
+
         function deleteSuggestion(index) {
             const suggestions = JSON.parse(localStorage.getItem('proSuggestions') || '[]');
             const realIndex = suggestions.length - 1 - index;
@@ -1194,293 +1296,153 @@
             localStorage.setItem('proSuggestions', JSON.stringify(suggestions));
             loadSuggestions();
         }
-        
+
         function clearAllSuggestions() {
             if (confirm(currentLang === 'es' ? '¿Borrar todas las sugerencias?' : 'Clear all suggestions?')) {
                 localStorage.removeItem('proSuggestions');
                 loadSuggestions();
             }
         }
-        
+
         function submitSuggestion() {
             const name = document.getElementById('suggestName').value.trim();
             const team = document.getElementById('suggestTeam').value.trim();
             const reason = document.getElementById('suggestReason').value.trim();
-            
             if (!name || !team) {
-                alert(currentLang === 'es' ? '⚠️ Por favor, completa el nombre y equipo del jugador' : '⚠️ Please complete player name and team');
+                alert(currentLang === 'es' ? '⚠️ Completa nombre y equipo' : '⚠️ Complete name and team');
                 return;
             }
-            
             const suggestions = JSON.parse(localStorage.getItem('proSuggestions') || '[]');
-            suggestions.push({
-                name: name,
-                team: team,
-                reason: reason,
-                date: new Date().toISOString(),
-                status: 'pending'
-            });
+            suggestions.push({ name, team, reason, date: new Date().toISOString() });
             localStorage.setItem('proSuggestions', JSON.stringify(suggestions));
-            
             document.getElementById('suggestName').value = '';
             document.getElementById('suggestTeam').value = '';
             document.getElementById('suggestReason').value = '';
             document.getElementById('suggestForm').classList.remove('show');
-            
-            alert(currentLang === 'es' 
-                ? `✅ ¡Gracias! Hemos recibido tu sugerencia para agregar a ${name}.\n\nPuedes ver todas las sugerencias en "Ver sugerencias de jugadores".` 
-                : `✅ Thanks! We've received your suggestion to add ${name}.\n\nYou can view all suggestions in "View player suggestions".`);
+            alert(currentLang === 'es' ? '✅ Sugerencia enviada' : '✅ Suggestion sent');
         }
-        
-        // ==================== CARGAR CONFIGURACIONES ====================
-        const translationsData = {
-            es: {
-                navPros: "👑 Pro Players",
-                navCamara: "📷 Cámara",
-                navControles: "🎮 Controles",
-                navVideo: "🖥️ Video",
-                navConsejos: "💡 Consejos",
-                eventsTitle: "📅 Próximos Eventos",
-                mainTitle: "🏆 RLProHub",
-                mainDesc: "Configuración de pros y calendario oficial RLCS 2026",
-                badgeText: "🔥 Datos oficiales",
-                prosTitle: "👑 Configuración de Pros",
-                camTitle: "📷 Configuración de Cámara",
-                controlsTitle: "🎮 Controles",
-                videoTitle: "🖥️ Video",
-                tipsTitle: "💡 Consejos para mejorar",
-                actionCol: "Acción",
-                keyCol: "Tecla",
-                whyCol: "Por qué",
-                searchPlaceholder: "🔍 Buscar jugador pro... (Zen, M0nkey M00n, Vatira...)",
-                searchBtn: "🔍 Buscar",
-                suggestBtn: "➕ Sugerir jugador",
-                viewSuggestionsBtn: "📋 Ver sugerencias de jugadores",
-                suggestFormTitle: "📝 Sugerir nuevo jugador pro",
-                suggestNamePlaceholder: "Nombre del jugador",
-                suggestTeamPlaceholder: "Equipo",
-                suggestReasonPlaceholder: "¿Por qué debería agregarse? (opcional)",
-                submitSuggest: "📨 Enviar sugerencia",
-                suggestionsListTitle: "📋 Sugerencias enviadas",
-                clearSuggestions: "🗑️ Borrar todas las sugerencias",
-                noResultsText: "❌ No se encontró el jugador",
-                noResultsSuggestionText: "¿Quieres sugerir que agreguemos a este jugador? Usa el botón 'Sugerir jugador'",
-                customizeTitle: "⚙️ Personalizar controles",
-                driftLabel: "🎯 Derrape / Air Roll:",
-                boostLabel: "💨 Boost:",
-                boostRecommended: "(Recomendado por pros)",
-                camera: [
-                    { name: "Campo de visión (FOV)", value: "110", desc: "Máximo permitido. Mejor visión periférica" },
-                    { name: "Distancia", value: "270 - 280", desc: "Balance entre ver el campo y controlar el coche" },
-                    { name: "Altura", value: "90 - 110", desc: "Más altura = mejor visión del campo" },
-                    { name: "Ángulo", value: "-3 a -5", desc: "Negativo = cámara más baja" },
-                    { name: "Rigidez (Stiffness)", value: "0.35 - 0.50", desc: "Movimiento de cámara con velocidad" },
-                    { name: "Velocidad de giro", value: "3.00 - 4.00", desc: "Qué tan rápido gira la cámara" }
-                ],
-                video: [
-                    { name: "Resolución", value: "1920x1080", desc: "Nativa" },
-                    { name: "Calidad de texturas", value: "Alta o Rendimiento", desc: "Balance calidad/FPS" },
-                    { name: "Sombras", value: "Bajas o Apagadas", desc: "Mejora FPS" },
-                    { name: "Desenfoque de movimiento", value: "Apagado", desc: "Reduce input lag" },
-                    { name: "V-Sync", value: "Apagado", desc: "Reduce input lag drásticamente" },
-                    { name: "FPS Límite", value: "250", desc: "O igual a tu monitor" }
-                ],
-                tips: [
-                    { title: "🎯 Calentamiento", desc: "15 minutos en Free Play antes de ranked. Practica aires, dribles y recuperaciones." },
-                    { title: "⚙️ Rotaciones", desc: "Nunca te quedes debajo del balón. Rota por el lado opuesto al balón tras tu toque." },
-                    { title: "💪 Posicionamiento", desc: "En defensa, posícionate entre el balón y tu portería. En ataque, mantén espacio." },
-                    { title: "🔋 Gestión de boost", desc: "Recoge pads pequeños (12 de boost). Nunca te quedes sin boost." },
-                    { title: "🎮 Mecánicas básicas", desc: "Aprende: Half-flip, Wave dash, Fast aerial, Hook shot." },
-                    { title: "📺 Ver repeticiones", desc: "Analiza tus partidas. Busca errores de posicionamiento, no de mecánica." },
-                    { title: "🏋️ Entrenamiento", desc: "Usa los paquetes de entrenamiento personalizados. Hay cientos para cada habilidad." },
-                    { title: "🧠 Mentalidad", desc: "No culpes a tus compañeros. Concéntrate en tu propio juego y mejora constante." }
-                ]
-            },
-            en: {
-                navPros: "👑 Pro Players",
-                navCamara: "📷 Camera",
-                navControles: "🎮 Controls",
-                navVideo: "🖥️ Video",
-                navConsejos: "💡 Tips",
-                eventsTitle: "📅 Upcoming Events",
-                mainTitle: "🏆 RLProHub",
-                mainDesc: "Pro settings and official RLCS 2026 schedule",
-                badgeText: "🔥 Official data",
-                prosTitle: "👑 Pro Players Settings",
-                camTitle: "📷 Camera Settings",
-                controlsTitle: "🎮 Controls",
-                videoTitle: "🖥️ Video Settings",
-                tipsTitle: "💡 Improvement Tips",
-                actionCol: "Action",
-                keyCol: "Key",
-                whyCol: "Why",
-                searchPlaceholder: "🔍 Search pro player... (Zen, M0nkey M00n, Vatira...)",
-                searchBtn: "🔍 Search",
-                suggestBtn: "➕ Suggest player",
-                viewSuggestionsBtn: "📋 View player suggestions",
-                suggestFormTitle: "📝 Suggest new pro player",
-                suggestNamePlaceholder: "Player name",
-                suggestTeamPlaceholder: "Team",
-                suggestReasonPlaceholder: "Why should it be added? (optional)",
-                submitSuggest: "📨 Submit suggestion",
-                suggestionsListTitle: "📋 Submitted suggestions",
-                clearSuggestions: "🗑️ Clear all suggestions",
-                noResultsText: "❌ Player not found",
-                noResultsSuggestionText: "Want to suggest we add this player? Use the 'Suggest player' button",
-                customizeTitle: "⚙️ Customize controls",
-                driftLabel: "🎯 Drift / Air Roll:",
-                boostLabel: "💨 Boost:",
-                boostRecommended: "(Recommended by pros)",
-                camera: [
-                    { name: "Field of View (FOV)", value: "110", desc: "Maximum allowed. Better peripheral vision" },
-                    { name: "Distance", value: "270 - 280", desc: "Balance between field view and car control" },
-                    { name: "Height", value: "90 - 110", desc: "Higher = better field vision" },
-                    { name: "Angle", value: "-3 to -5", desc: "Negative = lower camera angle" },
-                    { name: "Stiffness", value: "0.35 - 0.50", desc: "How much camera moves with speed" },
-                    { name: "Swivel Speed", value: "3.00 - 4.00", desc: "How fast camera turns" }
-                ],
-                video: [
-                    { name: "Resolution", value: "1920x1080", desc: "Native" },
-                    { name: "Texture Quality", value: "High or Performance", desc: "Balance quality/FPS" },
-                    { name: "Shadows", value: "Low or Off", desc: "Improves FPS" },
-                    { name: "Motion Blur", value: "Off", desc: "Reduces input lag" },
-                    { name: "V-Sync", value: "Off", desc: "Drastically reduces input lag" },
-                    { name: "FPS Limit", value: "250", desc: "Or match your monitor" }
-                ],
-                tips: [
-                    { title: "🎯 Warmup", desc: "15 minutes in Free Play before ranked. Practice aerials, dribbles, and recoveries." },
-                    { title: "⚙️ Rotations", desc: "Never stay under the ball. Rotate to the far post after your touch." },
-                    { title: "💪 Positioning", desc: "On defense, position between the ball and your goal. On offense, keep spacing." },
-                    { title: "🔋 Boost Management", desc: "Collect small pads (12 boost). Never run out of boost." },
-                    { title: "🎮 Basic Mechanics", desc: "Learn: Half-flip, Wave dash, Fast aerial, Hook shot." },
-                    { title: "📺 Watch Replays", desc: "Analyze your matches. Look for positioning mistakes, not mechanical errors." },
-                    { title: "🏋️ Training", desc: "Use custom training packs. There are hundreds for every skill." },
-                    { title: "🧠 Mindset", desc: "Don't blame your teammates. Focus on your own game and constant improvement." }
-                ]
-            }
-        };
-        
-        let currentLang = 'es';
-        
+
+        // ==================== CONTROLES ====================
+        function updateControls() {
+            const select = document.getElementById('driftSelect');
+            currentDriftKey = select.value;
+            document.getElementById('driftCurrent').innerHTML = (currentLang === 'es' ? 'Seleccionado: ' : 'Selected: ') + currentDriftKey;
+            localStorage.setItem('rocketDriftKey', currentDriftKey);
+            loadControls();
+        }
+
+        function loadControls() {
+            const body = document.getElementById('controlsBody');
+            const controls = JSON.parse(JSON.stringify(controlsBase[currentLang]));
+            controls[4].key = currentDriftKey;
+            body.innerHTML = '';
+            controls.forEach(ctrl => {
+                body.innerHTML += `<tr><td>${ctrl.action}</td><td><span class="key-badge">${ctrl.key}</span></td><td>${ctrl.why}</td></tr>`;
+            });
+        }
+
+        // ==================== OTRAS SECCIONES ====================
+        function loadCameraSettings() {
+            const container = document.getElementById('cameraSettings');
+            const settings = cameraData[currentLang];
+            container.innerHTML = '';
+            settings.forEach(s => {
+                container.innerHTML += `<div class="setting-item"><div class="setting-name">${s.name}</div><div class="setting-value">${s.value}</div><div class="setting-desc">${s.desc}</div></div>`;
+            });
+        }
+
+        function loadVideoSettings() {
+            const container = document.getElementById('videoSettings');
+            const settings = videoData[currentLang];
+            container.innerHTML = '';
+            settings.forEach(s => {
+                container.innerHTML += `<div class="setting-item"><div class="setting-name">${s.name}</div><div class="setting-value">${s.value}</div><div class="setting-desc">${s.desc}</div></div>`;
+            });
+        }
+
+        function loadTips() {
+            const container = document.getElementById('tipsGrid');
+            const tips = tipsData[currentLang];
+            container.innerHTML = '';
+            tips.forEach(t => {
+                container.innerHTML += `<div class="setting-item"><div class="setting-name">${t.title}</div><div class="setting-desc">${t.desc}</div></div>`;
+            });
+        }
+
+        // ==================== TRADUCCIONES GENERALES ====================
         function updateAllTexts() {
-            const t = translationsData[currentLang];
-            
-            document.getElementById('mainTitle').innerHTML = t.mainTitle;
-            document.getElementById('mainDesc').innerHTML = t.mainDesc;
-            document.getElementById('badgeText').innerHTML = t.badgeText;
-            
-            document.getElementById('navPros').innerHTML = t.navPros;
-            document.getElementById('navCamara').innerHTML = t.navCamara;
-            document.getElementById('navControles').innerHTML = t.navControles;
-            document.getElementById('navVideo').innerHTML = t.navVideo;
-            document.getElementById('navConsejos').innerHTML = t.navConsejos;
-            document.getElementById('eventsTitle').innerHTML = t.eventsTitle;
-            
+            const t = translations[currentLang];
+            document.getElementById('homeText').innerHTML = t.homeText;
+            document.getElementById('heroTitle').innerHTML = t.heroTitle;
+            document.getElementById('heroDesc').innerHTML = t.heroDesc;
+            document.getElementById('heroBadge').innerHTML = t.heroBadge;
+            document.getElementById('featureProsTitle').innerHTML = t.featureProsTitle;
+            document.getElementById('featureProsDesc').innerHTML = t.featureProsDesc;
+            document.getElementById('featureCamTitle').innerHTML = t.featureCamTitle;
+            document.getElementById('featureCamDesc').innerHTML = t.featureCamDesc;
+            document.getElementById('featureControlsTitle').innerHTML = t.featureControlsTitle;
+            document.getElementById('featureControlsDesc').innerHTML = t.featureControlsDesc;
+            document.getElementById('featureVideoTitle').innerHTML = t.featureVideoTitle;
+            document.getElementById('featureVideoDesc').innerHTML = t.featureVideoDesc;
+            document.getElementById('featureTipsTitle').innerHTML = t.featureTipsTitle;
+            document.getElementById('featureTipsDesc').innerHTML = t.featureTipsDesc;
+            document.getElementById('featureEventsTitle').innerHTML = t.featureEventsTitle;
+            document.getElementById('featureEventsDesc').innerHTML = t.featureEventsDesc;
+            document.getElementById('eventsSectionTitle').innerHTML = t.eventsSectionTitle;
+            document.getElementById('footerText').innerHTML = t.footerText;
             document.getElementById('prosTitle').innerHTML = t.prosTitle;
+            document.getElementById('prosDesc').innerHTML = t.prosDesc;
             document.getElementById('camTitle').innerHTML = t.camTitle;
+            document.getElementById('camDesc').innerHTML = t.camDesc;
             document.getElementById('controlsTitle').innerHTML = t.controlsTitle;
+            document.getElementById('controlsDesc').innerHTML = t.controlsDesc;
             document.getElementById('videoTitle').innerHTML = t.videoTitle;
+            document.getElementById('videoDesc').innerHTML = t.videoDesc;
             document.getElementById('tipsTitle').innerHTML = t.tipsTitle;
-            
+            document.getElementById('tipsDesc').innerHTML = t.tipsDesc;
+            document.getElementById('eventsViewTitle').innerHTML = t.eventsViewTitle;
+            document.getElementById('eventsViewDesc').innerHTML = t.eventsViewDesc;
             document.getElementById('actionCol').innerHTML = t.actionCol;
             document.getElementById('keyCol').innerHTML = t.keyCol;
             document.getElementById('whyCol').innerHTML = t.whyCol;
-            
+            document.getElementById('customizeTitle').innerHTML = t.customizeTitle;
+            document.getElementById('driftLabel').innerHTML = t.driftLabel;
+            document.getElementById('boostLabel').innerHTML = t.boostLabel;
+            document.getElementById('boostRecommended').innerHTML = t.boostRecommended;
             document.getElementById('proSearchInput').placeholder = t.searchPlaceholder;
             document.getElementById('searchBtnText').innerHTML = t.searchBtn;
             document.getElementById('suggestBtnText').innerHTML = t.suggestBtn;
             document.getElementById('viewSuggestionsBtn').innerHTML = t.viewSuggestionsBtn;
             document.getElementById('suggestFormTitle').innerHTML = t.suggestFormTitle;
-            document.getElementById('suggestName').placeholder = t.suggestNamePlaceholder;
-            document.getElementById('suggestTeam').placeholder = t.suggestTeamPlaceholder;
-            document.getElementById('suggestReason').placeholder = t.suggestReasonPlaceholder;
             document.getElementById('submitSuggestText').innerHTML = t.submitSuggest;
-            document.getElementById('suggestionsListTitle').innerHTML = t.suggestionsListTitle;
             document.getElementById('clearSuggestionsText').innerHTML = t.clearSuggestions;
-            document.getElementById('noResultsText').innerHTML = t.noResultsText;
-            document.getElementById('noResultsSuggestionText').innerHTML = t.noResultsSuggestionText;
             
-            document.getElementById('customizeTitle').innerHTML = t.customizeTitle;
-            document.getElementById('driftLabel').innerHTML = t.driftLabel;
-            document.getElementById('boostLabel').innerHTML = t.boostLabel;
-            document.getElementById('boostRecommended').innerHTML = t.boostRecommended;
+            // Recargar vistas
+            loadEventsPreview();
+            loadFullEventsList();
+            if (document.getElementById('prosView').classList.contains('active')) loadPros(prosData[currentLang]);
+            if (document.getElementById('camaraView').classList.contains('active')) loadCameraSettings();
+            if (document.getElementById('controlesView').classList.contains('active')) loadControls();
+            if (document.getElementById('videoView').classList.contains('active')) loadVideoSettings();
+            if (document.getElementById('consejosView').classList.contains('active')) loadTips();
             
-            const themeBtn = document.getElementById('themeBtn');
-            const isDark = document.body.classList.contains('dark');
-            themeBtn.innerHTML = isDark ? (currentLang === 'es' ? '☀️ Modo Claro' : '☀️ Light Mode') : (currentLang === 'es' ? '🌙 Modo Oscuro' : '🌙 Dark Mode');
-            
-            const langBtn = document.getElementById('langBtn');
-            langBtn.innerHTML = currentLang === 'es' ? '🇪🇸 Español' : '🇺🇸 English';
-            
-            document.getElementById('driftCurrent').innerHTML = (currentLang === 'es' ? 'Seleccionado: ' : 'Selected: ') + currentDriftKey;
-        }
-        
-        function loadCameraSettings() {
-            const container = document.getElementById('cameraSettings');
-            const settings = translationsData[currentLang].camera;
-            container.innerHTML = '';
-            settings.forEach(set => {
-                container.innerHTML += `<div class="setting-item"><div class="setting-name">${set.name}</div><div class="setting-value">${set.value}</div><div class="setting-desc">${set.desc}</div></div>`;
-            });
-        }
-        
-        function loadVideoSettings() {
-            const container = document.getElementById('videoSettings');
-            const settings = translationsData[currentLang].video;
-            container.innerHTML = '';
-            settings.forEach(set => {
-                container.innerHTML += `<div class="setting-item"><div class="setting-name">${set.name}</div><div class="setting-value">${set.value}</div><div class="setting-desc">${set.desc}</div></div>`;
-            });
-        }
-        
-        function loadTips() {
-            const container = document.getElementById('tipsGrid');
-            const tips = translationsData[currentLang].tips;
-            container.innerHTML = '';
-            tips.forEach(tip => {
-                container.innerHTML += `<div class="setting-item"><div class="setting-name">${tip.title}</div><div class="setting-desc">${tip.desc}</div></div>`;
-            });
-        }
-        
-        function loadAllContent() {
-            updateAllTexts();
-            loadEvents();
-            loadPros(prosData[currentLang]);
-            loadCameraSettings();
-            loadControls();
-            loadVideoSettings();
-            loadTips();
             updateRealClock();
         }
-        
-        window.toggleLanguage = function() {
-            currentLang = currentLang === 'es' ? 'en' : 'es';
-            loadAllContent();
-        };
-        
-        window.toggleTheme = function() {
+
+        // ==================== TEMA Y IDIOMA ====================
+        function toggleTheme() {
             document.body.classList.toggle('dark');
-            const isDark = document.body.classList.contains('dark');
             const themeBtn = document.getElementById('themeBtn');
-            themeBtn.innerHTML = isDark ? (currentLang === 'es' ? '☀️ Modo Claro' : '☀️ Light Mode') : (currentLang === 'es' ? '🌙 Modo Oscuro' : '🌙 Dark Mode');
-        };
-        
-        window.showTab = function(tabId, btn) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            if(btn) btn.classList.add('active');
-            closeSidebarOnMobile();
-        };
-        
-        document.getElementById('eventModal').addEventListener('click', function(e) {
-            if(e.target === this) closeModal();
-        });
-        
-        document.addEventListener('keydown', function(e) {
-            if(e.key === 'Escape') closeModal();
-        });
-        
+            themeBtn.innerHTML = document.body.classList.contains('dark') ? '☀️' : '🌙';
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'es' ? 'en' : 'es';
+            document.getElementById('langBtn').innerHTML = currentLang === 'es' ? '🇪🇸' : '🇺🇸';
+            updateAllTexts();
+        }
+
+        // ==================== INICIALIZAR ====================
         const savedDrift = localStorage.getItem('rocketDriftKey');
         if (savedDrift) {
             currentDriftKey = savedDrift;
@@ -1488,21 +1450,11 @@
             if (driftSelect) driftSelect.value = savedDrift;
         }
         
-        loadAllContent();
-        setInterval(() => {
-            loadEvents();
-            updateRealClock();
-        }, 60000);
+        updateAllTexts();
+        loadPros(prosData[currentLang]);
         
-        window.updateControls = function() {
-            const driftSelect = document.getElementById('driftSelect');
-            if (driftSelect) {
-                currentDriftKey = driftSelect.value;
-                localStorage.setItem('rocketDriftKey', currentDriftKey);
-                document.getElementById('driftCurrent').innerHTML = (currentLang === 'es' ? 'Seleccionado: ' : 'Selected: ') + currentDriftKey;
-            }
-            loadControls();
-        };
+        document.getElementById('eventModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
     </script>
 </body>
 </html>
