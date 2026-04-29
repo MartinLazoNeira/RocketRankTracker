@@ -418,6 +418,24 @@
             transform: scale(1.02);
         }
 
+        /* Botón para ver sugerencias */
+        .view-suggestions-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .view-suggestions-btn:hover {
+            background: #138496;
+        }
+
         .no-results {
             text-align: center;
             padding: 40px;
@@ -430,7 +448,7 @@
             margin-bottom: 15px;
         }
 
-        .suggest-form {
+        .suggest-form, .suggestions-list {
             margin-top: 20px;
             padding: 20px;
             background: var(--selector-bg);
@@ -438,7 +456,7 @@
             display: none;
         }
 
-        .suggest-form.show {
+        .suggest-form.show, .suggestions-list.show {
             display: block;
         }
 
@@ -464,6 +482,47 @@
             padding: 10px 20px;
             border-radius: 10px;
             cursor: pointer;
+        }
+
+        .suggestion-item {
+            background: var(--event-card-bg);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid #FF5E00;
+        }
+
+        .suggestion-name {
+            font-weight: bold;
+            color: #FF5E00;
+        }
+
+        .suggestion-team {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+        }
+
+        .suggestion-reason {
+            font-size: 0.8em;
+            margin-top: 5px;
+            color: var(--text-primary);
+        }
+
+        .suggestion-date {
+            font-size: 0.7em;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .delete-suggestion {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.7em;
+            margin-top: 5px;
         }
 
         .tab-content {
@@ -747,26 +806,36 @@
                     <!-- Buscador -->
                     <div class="search-section">
                         <div class="search-box-pros">
-                            <input type="text" id="proSearchInput" class="search-input" placeholder="🔍 Buscar jugador pro... (Zen, M0nkey M00n, Vatira...)" onkeyup="searchPro()">
-                            <button class="search-btn" onclick="searchPro()">🔍 Buscar</button>
-                            <button class="suggest-btn" onclick="toggleSuggestForm()">➕ Sugerir jugador</button>
+                            <input type="text" id="proSearchInput" class="search-input" id="searchPlaceholder" onkeyup="searchPro()">
+                            <button class="search-btn" id="searchBtnText" onclick="searchPro()">🔍 Buscar</button>
+                            <button class="suggest-btn" id="suggestBtnText" onclick="toggleSuggestForm()">➕ Sugerir jugador</button>
                         </div>
+                        
+                        <!-- Botón para ver sugerencias -->
+                        <button class="view-suggestions-btn" id="viewSuggestionsBtn" onclick="toggleSuggestionsList()">📋 Ver sugerencias de jugadores</button>
                         
                         <!-- Formulario para sugerir jugador -->
                         <div id="suggestForm" class="suggest-form">
-                            <h3>📝 Sugerir nuevo jugador pro</h3>
-                            <input type="text" id="suggestName" placeholder="Nombre del jugador">
-                            <input type="text" id="suggestTeam" placeholder="Equipo">
-                            <textarea id="suggestReason" placeholder="¿Por qué debería agregarse? (opcional)"></textarea>
-                            <button class="submit-suggest" onclick="submitSuggestion()">📨 Enviar sugerencia</button>
+                            <h3 id="suggestFormTitle">📝 Sugerir nuevo jugador pro</h3>
+                            <input type="text" id="suggestName" id="suggestNamePlaceholder" placeholder="Nombre del jugador">
+                            <input type="text" id="suggestTeam" id="suggestTeamPlaceholder" placeholder="Equipo">
+                            <textarea id="suggestReason" id="suggestReasonPlaceholder" placeholder="¿Por qué debería agregarse? (opcional)"></textarea>
+                            <button class="submit-suggest" id="submitSuggestText" onclick="submitSuggestion()">📨 Enviar sugerencia</button>
+                        </div>
+                        
+                        <!-- Lista de sugerencias -->
+                        <div id="suggestionsList" class="suggestions-list">
+                            <h3 id="suggestionsListTitle">📋 Sugerencias enviadas</h3>
+                            <div id="suggestionsContainer"></div>
+                            <button class="submit-suggest" style="background: #dc3545; margin-top: 10px;" id="clearSuggestionsText" onclick="clearAllSuggestions()">🗑️ Borrar todas las sugerencias</button>
                         </div>
                     </div>
                     
                     <div id="prosCount" style="margin-bottom: 10px; color: var(--text-secondary);"></div>
                     <div class="pros-grid" id="prosGrid"></div>
                     <div id="noResultsMsg" style="display: none; text-align: center; padding: 40px; background: var(--event-card-bg); border-radius: 15px; margin-top: 20px;">
-                        <p>❌ No se encontró el jugador</p>
-                        <p style="font-size: 0.9em;">¿Quieres sugerir que agreguemos a este jugador? Usa el botón "Sugerir jugador"</p>
+                        <p id="noResultsText">❌ No se encontró el jugador</p>
+                        <p id="noResultsSuggestionText" style="font-size: 0.9em;">¿Quieres sugerir que agreguemos a este jugador? Usa el botón "Sugerir jugador"</p>
                     </div>
                 </div>
             </div>
@@ -783,9 +852,9 @@
                     <h2 id="controlsTitle">🎮 Controles</h2>
                     
                     <div class="controls-selector">
-                        <h3>⚙️ Personalizar controles</h3>
+                        <h3 id="customizeTitle">⚙️ Personalizar controles</h3>
                         <div class="selector-group">
-                            <label>🎯 Derrape / Air Roll:</label>
+                            <label id="driftLabel">🎯 Derrape / Air Roll:</label>
                             <select id="driftSelect" onchange="updateControls()">
                                 <option value="Square/X">Square/X (Predeterminado)</option>
                                 <option value="L1/LB">L1/LB (Air Roll Izquierdo)</option>
@@ -793,9 +862,9 @@
                             <span class="current-setting" id="driftCurrent">Seleccionado: Square/X</span>
                         </div>
                         <div class="selector-group" style="margin-top: 10px;">
-                            <label>💨 Boost:</label>
+                            <label id="boostLabel">💨 Boost:</label>
                             <span class="current-setting">Circle/B (Fijo)</span>
-                            <span style="font-size: 0.8em; color: var(--text-secondary);">(Recomendado por pros)</span>
+                            <span id="boostRecommended" style="font-size: 0.8em; color: var(--text-secondary);">(Recomendado por pros)</span>
                         </div>
                     </div>
                     
@@ -937,7 +1006,7 @@
             const driftSelect = document.getElementById('driftSelect');
             if (driftSelect) {
                 currentDriftKey = driftSelect.value;
-                document.getElementById('driftCurrent').innerHTML = `Seleccionado: ${currentDriftKey}`;
+                document.getElementById('driftCurrent').innerHTML = (currentLang === 'es' ? 'Seleccionado: ' : 'Selected: ') + currentDriftKey;
                 localStorage.setItem('rocketDriftKey', currentDriftKey);
             }
             loadControls();
@@ -1025,7 +1094,7 @@
             });
         }
         
-        // ==================== FUNCIONES DE BÚSQUEDA ====================
+        // ==================== FUNCIONES DE BÚSQUEDA Y SUGERENCIAS ====================
         let currentPros = [...prosData.es];
         
         function loadPros(filteredPros = null) {
@@ -1034,7 +1103,7 @@
             const prosCount = document.getElementById('prosCount');
             
             if (prosCount) {
-                prosCount.innerHTML = `📊 ${prosToShow.length} jugadores profesionales disponibles`;
+                prosCount.innerHTML = (currentLang === 'es' ? '📊 ' : '📊 ') + prosToShow.length + (currentLang === 'es' ? ' jugadores profesionales disponibles' : ' pro players available');
             }
             
             const noResults = document.getElementById('noResultsMsg');
@@ -1083,7 +1152,58 @@
         
         function toggleSuggestForm() {
             const form = document.getElementById('suggestForm');
+            const list = document.getElementById('suggestionsList');
+            if (list.classList.contains('show')) list.classList.remove('show');
             form.classList.toggle('show');
+        }
+        
+        function toggleSuggestionsList() {
+            const list = document.getElementById('suggestionsList');
+            const form = document.getElementById('suggestForm');
+            if (form.classList.contains('show')) form.classList.remove('show');
+            list.classList.toggle('show');
+            if (list.classList.contains('show')) {
+                loadSuggestions();
+            }
+        }
+        
+        function loadSuggestions() {
+            const container = document.getElementById('suggestionsContainer');
+            const suggestions = JSON.parse(localStorage.getItem('proSuggestions') || '[]');
+            
+            if (suggestions.length === 0) {
+                container.innerHTML = '<p style="text-align:center; padding:20px;">' + (currentLang === 'es' ? 'No hay sugerencias aún' : 'No suggestions yet') + '</p>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            suggestions.reverse().forEach((suggestion, index) => {
+                const date = new Date(suggestion.date).toLocaleDateString(currentLang === 'es' ? 'es-ES' : 'en-US');
+                container.innerHTML += `
+                    <div class="suggestion-item" data-index="${index}">
+                        <div class="suggestion-name">${suggestion.name}</div>
+                        <div class="suggestion-team">${suggestion.team}</div>
+                        ${suggestion.reason ? `<div class="suggestion-reason">💬 ${suggestion.reason}</div>` : ''}
+                        <div class="suggestion-date">📅 ${date}</div>
+                        <button class="delete-suggestion" onclick="deleteSuggestion(${index})">🗑️ ${currentLang === 'es' ? 'Eliminar' : 'Delete'}</button>
+                    </div>
+                `;
+            });
+        }
+        
+        function deleteSuggestion(index) {
+            const suggestions = JSON.parse(localStorage.getItem('proSuggestions') || '[]');
+            const realIndex = suggestions.length - 1 - index;
+            suggestions.splice(realIndex, 1);
+            localStorage.setItem('proSuggestions', JSON.stringify(suggestions));
+            loadSuggestions();
+        }
+        
+        function clearAllSuggestions() {
+            if (confirm(currentLang === 'es' ? '¿Borrar todas las sugerencias?' : 'Clear all suggestions?')) {
+                localStorage.removeItem('proSuggestions');
+                loadSuggestions();
+            }
         }
         
         function submitSuggestion() {
@@ -1096,7 +1216,6 @@
                 return;
             }
             
-            // Guardar sugerencia en localStorage
             const suggestions = JSON.parse(localStorage.getItem('proSuggestions') || '[]');
             suggestions.push({
                 name: name,
@@ -1107,15 +1226,14 @@
             });
             localStorage.setItem('proSuggestions', JSON.stringify(suggestions));
             
-            // Limpiar formulario
             document.getElementById('suggestName').value = '';
             document.getElementById('suggestTeam').value = '';
             document.getElementById('suggestReason').value = '';
             document.getElementById('suggestForm').classList.remove('show');
             
             alert(currentLang === 'es' 
-                ? `✅ ¡Gracias! Hemos recibido tu sugerencia para agregar a ${name}.\n\nLos administradores revisarán la solicitud.` 
-                : `✅ Thanks! We've received your suggestion to add ${name}.\n\nAdmins will review the request.`);
+                ? `✅ ¡Gracias! Hemos recibido tu sugerencia para agregar a ${name}.\n\nPuedes ver todas las sugerencias en "Ver sugerencias de jugadores".` 
+                : `✅ Thanks! We've received your suggestion to add ${name}.\n\nYou can view all suggestions in "View player suggestions".`);
         }
         
         // ==================== CARGAR CONFIGURACIONES ====================
@@ -1138,6 +1256,23 @@
                 actionCol: "Acción",
                 keyCol: "Tecla",
                 whyCol: "Por qué",
+                searchPlaceholder: "🔍 Buscar jugador pro... (Zen, M0nkey M00n, Vatira...)",
+                searchBtn: "🔍 Buscar",
+                suggestBtn: "➕ Sugerir jugador",
+                viewSuggestionsBtn: "📋 Ver sugerencias de jugadores",
+                suggestFormTitle: "📝 Sugerir nuevo jugador pro",
+                suggestNamePlaceholder: "Nombre del jugador",
+                suggestTeamPlaceholder: "Equipo",
+                suggestReasonPlaceholder: "¿Por qué debería agregarse? (opcional)",
+                submitSuggest: "📨 Enviar sugerencia",
+                suggestionsListTitle: "📋 Sugerencias enviadas",
+                clearSuggestions: "🗑️ Borrar todas las sugerencias",
+                noResultsText: "❌ No se encontró el jugador",
+                noResultsSuggestionText: "¿Quieres sugerir que agreguemos a este jugador? Usa el botón 'Sugerir jugador'",
+                customizeTitle: "⚙️ Personalizar controles",
+                driftLabel: "🎯 Derrape / Air Roll:",
+                boostLabel: "💨 Boost:",
+                boostRecommended: "(Recomendado por pros)",
                 camera: [
                     { name: "Campo de visión (FOV)", value: "110", desc: "Máximo permitido. Mejor visión periférica" },
                     { name: "Distancia", value: "270 - 280", desc: "Balance entre ver el campo y controlar el coche" },
@@ -1183,6 +1318,23 @@
                 actionCol: "Action",
                 keyCol: "Key",
                 whyCol: "Why",
+                searchPlaceholder: "🔍 Search pro player... (Zen, M0nkey M00n, Vatira...)",
+                searchBtn: "🔍 Search",
+                suggestBtn: "➕ Suggest player",
+                viewSuggestionsBtn: "📋 View player suggestions",
+                suggestFormTitle: "📝 Suggest new pro player",
+                suggestNamePlaceholder: "Player name",
+                suggestTeamPlaceholder: "Team",
+                suggestReasonPlaceholder: "Why should it be added? (optional)",
+                submitSuggest: "📨 Submit suggestion",
+                suggestionsListTitle: "📋 Submitted suggestions",
+                clearSuggestions: "🗑️ Clear all suggestions",
+                noResultsText: "❌ Player not found",
+                noResultsSuggestionText: "Want to suggest we add this player? Use the 'Suggest player' button",
+                customizeTitle: "⚙️ Customize controls",
+                driftLabel: "🎯 Drift / Air Roll:",
+                boostLabel: "💨 Boost:",
+                boostRecommended: "(Recommended by pros)",
                 camera: [
                     { name: "Field of View (FOV)", value: "110", desc: "Maximum allowed. Better peripheral vision" },
                     { name: "Distance", value: "270 - 280", desc: "Balance between field view and car control" },
@@ -1214,6 +1366,66 @@
         
         let currentLang = 'es';
         
+        function updateAllTexts() {
+            const t = translationsData[currentLang];
+            
+            // Header
+            document.getElementById('mainTitle').innerHTML = t.mainTitle;
+            document.getElementById('mainDesc').innerHTML = t.mainDesc;
+            document.getElementById('badgeText').innerHTML = t.badgeText;
+            
+            // Navegación
+            document.getElementById('navPros').innerHTML = t.navPros;
+            document.getElementById('navCamara').innerHTML = t.navCamara;
+            document.getElementById('navControles').innerHTML = t.navControles;
+            document.getElementById('navVideo').innerHTML = t.navVideo;
+            document.getElementById('navConsejos').innerHTML = t.navConsejos;
+            document.getElementById('eventsTitle').innerHTML = t.eventsTitle;
+            
+            // Títulos de secciones
+            document.getElementById('prosTitle').innerHTML = t.prosTitle;
+            document.getElementById('camTitle').innerHTML = t.camTitle;
+            document.getElementById('controlsTitle').innerHTML = t.controlsTitle;
+            document.getElementById('videoTitle').innerHTML = t.videoTitle;
+            document.getElementById('tipsTitle').innerHTML = t.tipsTitle;
+            
+            // Tabla de controles
+            document.getElementById('actionCol').innerHTML = t.actionCol;
+            document.getElementById('keyCol').innerHTML = t.keyCol;
+            document.getElementById('whyCol').innerHTML = t.whyCol;
+            
+            // Buscador y sugerencias
+            document.getElementById('proSearchInput').placeholder = t.searchPlaceholder;
+            document.getElementById('searchBtnText').innerHTML = t.searchBtn;
+            document.getElementById('suggestBtnText').innerHTML = t.suggestBtn;
+            document.getElementById('viewSuggestionsBtn').innerHTML = t.viewSuggestionsBtn;
+            document.getElementById('suggestFormTitle').innerHTML = t.suggestFormTitle;
+            document.getElementById('suggestName').placeholder = t.suggestNamePlaceholder;
+            document.getElementById('suggestTeam').placeholder = t.suggestTeamPlaceholder;
+            document.getElementById('suggestReason').placeholder = t.suggestReasonPlaceholder;
+            document.getElementById('submitSuggestText').innerHTML = t.submitSuggest;
+            document.getElementById('suggestionsListTitle').innerHTML = t.suggestionsListTitle;
+            document.getElementById('clearSuggestionsText').innerHTML = t.clearSuggestions;
+            document.getElementById('noResultsText').innerHTML = t.noResultsText;
+            document.getElementById('noResultsSuggestionText').innerHTML = t.noResultsSuggestionText;
+            
+            // Selector de controles
+            document.getElementById('customizeTitle').innerHTML = t.customizeTitle;
+            document.getElementById('driftLabel').innerHTML = t.driftLabel;
+            document.getElementById('boostLabel').innerHTML = t.boostLabel;
+            document.getElementById('boostRecommended').innerHTML = t.boostRecommended;
+            
+            // Botones de tema e idioma
+            const themeBtn = document.getElementById('themeBtn');
+            const isDark = document.body.classList.contains('dark');
+            themeBtn.innerHTML = isDark ? (currentLang === 'es' ? '☀️ Modo Claro' : '☀️ Light Mode') : (currentLang === 'es' ? '🌙 Modo Oscuro' : '🌙 Dark Mode');
+            
+            const langBtn = document.getElementById('langBtn');
+            langBtn.innerHTML = currentLang === 'es' ? '🇪🇸 Español' : '🇺🇸 English';
+            
+            document.getElementById('driftCurrent').innerHTML = (currentLang === 'es' ? 'Seleccionado: ' : 'Selected: ') + currentDriftKey;
+        }
+        
         function loadCameraSettings() {
             const container = document.getElementById('cameraSettings');
             const settings = translationsData[currentLang].camera;
@@ -1241,37 +1453,8 @@
             });
         }
         
-        function updateUITexts() {
-            document.getElementById('navPros').innerHTML = translationsData[currentLang].navPros;
-            document.getElementById('navCamara').innerHTML = translationsData[currentLang].navCamara;
-            document.getElementById('navControles').innerHTML = translationsData[currentLang].navControles;
-            document.getElementById('navVideo').innerHTML = translationsData[currentLang].navVideo;
-            document.getElementById('navConsejos').innerHTML = translationsData[currentLang].navConsejos;
-            document.getElementById('eventsTitle').innerHTML = translationsData[currentLang].eventsTitle;
-            document.getElementById('mainTitle').innerHTML = translationsData[currentLang].mainTitle;
-            document.getElementById('mainDesc').innerHTML = translationsData[currentLang].mainDesc;
-            document.getElementById('badgeText').innerHTML = translationsData[currentLang].badgeText;
-            document.getElementById('prosTitle').innerHTML = translationsData[currentLang].prosTitle;
-            document.getElementById('camTitle').innerHTML = translationsData[currentLang].camTitle;
-            document.getElementById('controlsTitle').innerHTML = translationsData[currentLang].controlsTitle;
-            document.getElementById('videoTitle').innerHTML = translationsData[currentLang].videoTitle;
-            document.getElementById('tipsTitle').innerHTML = translationsData[currentLang].tipsTitle;
-            document.getElementById('actionCol').innerHTML = translationsData[currentLang].actionCol;
-            document.getElementById('keyCol').innerHTML = translationsData[currentLang].keyCol;
-            document.getElementById('whyCol').innerHTML = translationsData[currentLang].whyCol;
-            
-            const themeBtn = document.getElementById('themeBtn');
-            const isDark = document.body.classList.contains('dark');
-            themeBtn.innerHTML = isDark ? (currentLang === 'es' ? '☀️ Modo Claro' : '☀️ Light Mode') : (currentLang === 'es' ? '🌙 Modo Oscuro' : '🌙 Dark Mode');
-            
-            const langBtn = document.getElementById('langBtn');
-            langBtn.innerHTML = currentLang === 'es' ? '🇪🇸 Español' : '🇺🇸 English';
-            
-            document.getElementById('driftCurrent').innerHTML = `Seleccionado: ${currentDriftKey}`;
-        }
-        
         function loadAllContent() {
-            updateUITexts();
+            updateAllTexts();
             loadEvents();
             loadPros(prosData[currentLang]);
             loadCameraSettings();
@@ -1327,7 +1510,7 @@
             if (driftSelect) {
                 currentDriftKey = driftSelect.value;
                 localStorage.setItem('rocketDriftKey', currentDriftKey);
-                document.getElementById('driftCurrent').innerHTML = `Seleccionado: ${currentDriftKey}`;
+                document.getElementById('driftCurrent').innerHTML = (currentLang === 'es' ? 'Seleccionado: ' : 'Selected: ') + currentDriftKey;
             }
             loadControls();
         };
