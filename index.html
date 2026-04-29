@@ -24,6 +24,8 @@
             --event-border: #FF5E00;
             --modal-bg: white;
             --modal-text: #333;
+            --past-event-bg: #e0e0e0;
+            --past-event-text: #999;
         }
 
         body.dark {
@@ -37,6 +39,8 @@
             --event-card-bg: #2a2a3a;
             --modal-bg: #2a2a3a;
             --modal-text: #e0e0e0;
+            --past-event-bg: #1a1a2a;
+            --past-event-text: #666;
         }
 
         body {
@@ -99,6 +103,10 @@
             font-size: 0.9em;
             transition: all 0.3s;
             width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .theme-toggle:hover, .lang-toggle:hover {
@@ -163,6 +171,11 @@
             cursor: pointer;
         }
 
+        .event-card.past {
+            opacity: 0.7;
+            border-left-color: #888;
+        }
+
         .event-card:hover {
             transform: translateX(5px);
             background: var(--sidebar-hover);
@@ -184,6 +197,24 @@
             font-size: 0.7em;
             color: #FF5E00;
             font-weight: bold;
+        }
+
+        .event-status {
+            font-size: 0.65em;
+            margin-top: 5px;
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .status-upcoming {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .status-finished {
+            background: #666;
+            color: white;
         }
 
         .modal {
@@ -378,6 +409,7 @@
         .setting-desc {
             font-size: 0.8em;
             color: var(--text-secondary);
+            line-height: 1.4;
         }
 
         .controls-table {
@@ -441,8 +473,8 @@
             </div>
             
             <div class="sidebar-controls">
-                <button class="theme-toggle" onclick="toggleTheme()">🌙 Modo Oscuro</button>
-                <button class="lang-toggle" onclick="toggleLanguage()">🇺🇸 English</button>
+                <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙 Modo Oscuro</button>
+                <button class="lang-toggle" id="langBtn" onclick="toggleLanguage()">🇪🇸 Español</button>
             </div>
             
             <ul class="nav-menu">
@@ -454,7 +486,7 @@
             </ul>
             
             <div class="events-sidebar">
-                <h3>📅 Próximos Eventos</h3>
+                <h3 id="eventsTitle">📅 Próximos Eventos</h3>
                 <div id="eventsList"></div>
             </div>
         </div>
@@ -483,7 +515,7 @@
             <div id="controles" class="tab-content">
                 <div class="card">
                     <h2 id="controlsTitle">🎮 Controles</h2>
-                    <table class="controls-table" id="controlsTable">
+                    <table class="controls-table">
                         <thead><tr><th id="actionCol">Acción</th><th id="keyCol">Tecla</th><th id="whyCol">Por qué</th></tr></thead>
                         <tbody id="controlsBody"></tbody>
                     </table>
@@ -499,7 +531,7 @@
             
             <div id="consejos" class="tab-content">
                 <div class="card">
-                    <h2 id="tipsTitle">💡 Consejos</h2>
+                    <h2 id="tipsTitle">💡 Consejos para mejorar</h2>
                     <div class="settings-grid" id="tipsGrid"></div>
                 </div>
             </div>
@@ -517,20 +549,23 @@
     </div>
 
     <script>
+        // Fecha actual para comparar eventos pasados
+        const today = new Date(2026, 3, 15); // Abril 15 2026 para simular eventos pasados
+
         const eventsData = {
             es: [
-                { name: "RLCS Major 1 - Boston", date: "19-22 Febrero 2026", location: "Boston, USA", prize: "$354,000", verified: true, desc: "Primer Major de la temporada 2026." },
-                { name: "RLCS Major 2 - París", date: "20-24 Mayo 2026", location: "París, Francia", prize: "$354,000", verified: true, desc: "Segundo Major de la temporada." },
-                { name: "RLCS World Championship", date: "15-20 Septiembre 2026", location: "TBD", prize: "$1,200,000", verified: true, desc: "El campeonato mundial." },
-                { name: "Esports World Cup", date: "Julio-Agosto 2026", location: "Riad, Arabia Saudita", prize: "Por anunciar", verified: false, desc: "Rocket League confirmado." },
-                { name: "FIFAe World Cup", date: "Diciembre 2026", location: "Riad, Arabia Saudita", prize: "Por anunciar", verified: true, desc: "Colaboración FIFA y Rocket League." }
+                { name: "RLCS Major 1 - Boston", date: "19-22 Febrero 2026", dateStart: new Date(2026, 1, 19), location: "Boston, USA", prize: "$354,000", verified: true, desc: "Primer Major de la temporada 2026. Participan los mejores equipos del mundo. Fase de grupos + playoffs en vivo.", winner: "Team Vitality", winnerScore: "4-2" },
+                { name: "RLCS Major 2 - París", date: "20-24 Mayo 2026", dateStart: new Date(2026, 4, 20), location: "París, Francia", prize: "$354,000", verified: true, desc: "Segundo Major de la temporada. Se jugará en la Paris La Défense Arena, el recinto cubierto más grande de Europa.", winner: null },
+                { name: "RLCS World Championship", date: "15-20 Septiembre 2026", dateStart: new Date(2026, 8, 15), location: "TBD", prize: "$1,200,000", verified: true, desc: "¡El campeonato mundial! Los 16 mejores equipos del mundo compiten por el título de Campeón Mundial.", winner: null },
+                { name: "Esports World Cup", date: "Julio-Agosto 2026", dateStart: new Date(2026, 6, 1), location: "Riad, Arabia Saudita", prize: "Por anunciar", verified: false, desc: "Rocket League confirmado en el calendario. Se espera el torneo con el prize pool más grande del año.", winner: null },
+                { name: "FIFAe World Cup", date: "Diciembre 2026", dateStart: new Date(2026, 11, 1), location: "Riad, Arabia Saudita", prize: "Por anunciar", verified: true, desc: "Primera colaboración oficial entre FIFA y Rocket League. Torneo de selecciones nacionales.", winner: null }
             ],
             en: [
-                { name: "RLCS Major 1 - Boston", date: "Feb 19-22, 2026", location: "Boston, USA", prize: "$354,000", verified: true, desc: "First Major of 2026 season." },
-                { name: "RLCS Major 2 - Paris", date: "May 20-24, 2026", location: "Paris, France", prize: "$354,000", verified: true, desc: "Second Major of the season." },
-                { name: "RLCS World Championship", date: "Sep 15-20, 2026", location: "TBD", prize: "$1,200,000", verified: true, desc: "World Championship." },
-                { name: "Esports World Cup", date: "July-August 2026", location: "Riyadh, Saudi Arabia", prize: "TBA", verified: false, desc: "Rocket League confirmed." },
-                { name: "FIFAe World Cup", date: "December 2026", location: "Riyadh, Saudi Arabia", prize: "TBA", verified: true, desc: "FIFA x Rocket League collab." }
+                { name: "RLCS Major 1 - Boston", date: "Feb 19-22, 2026", dateStart: new Date(2026, 1, 19), location: "Boston, USA", prize: "$354,000", verified: true, desc: "First Major of the 2026 season. Top teams from around the world compete. Group stage + live playoffs.", winner: "Team Vitality", winnerScore: "4-2" },
+                { name: "RLCS Major 2 - Paris", date: "May 20-24, 2026", dateStart: new Date(2026, 4, 20), location: "Paris, France", prize: "$354,000", verified: true, desc: "Second Major of the season. Will be played at Paris La Défense Arena, Europe's largest indoor venue.", winner: null },
+                { name: "RLCS World Championship", date: "Sep 15-20, 2026", dateStart: new Date(2026, 8, 15), location: "TBD", prize: "$1,200,000", verified: true, desc: "The World Championship! Top 16 teams compete for the title of World Champion.", winner: null },
+                { name: "Esports World Cup", date: "July-August 2026", dateStart: new Date(2026, 6, 1), location: "Riyadh, Saudi Arabia", prize: "TBA", verified: false, desc: "Rocket League confirmed. Expected to be the largest prize pool of the year.", winner: null },
+                { name: "FIFAe World Cup", date: "December 2026", dateStart: new Date(2026, 11, 1), location: "Riyadh, Saudi Arabia", prize: "TBA", verified: true, desc: "First official collaboration between FIFA and Rocket League. National teams tournament.", winner: null }
             ]
         };
 
@@ -541,7 +576,9 @@
                 { name: "Vatira", team: "KC", settings: { fov: 109, distance: 270, height: 100, angle: -4, stiffness: 0.35, deadzone: 0.08, sens_dir: 1.3, sens_air: 1.3 } },
                 { name: "Firstkiller", team: "G2", settings: { fov: 110, distance: 280, height: 100, angle: -3, stiffness: 0.5, deadzone: 0.05, sens_dir: 1.35, sens_air: 1.35 } },
                 { name: "Beastmode", team: "G2", settings: { fov: 110, distance: 270, height: 90, angle: -5, stiffness: 0.45, deadzone: 0.1, sens_dir: 1.4, sens_air: 1.4 } },
-                { name: "Daniel", team: "Shopify", settings: { fov: 110, distance: 270, height: 100, angle: -3, stiffness: 0.4, deadzone: 0.1, sens_dir: 1.3, sens_air: 1.4 } }
+                { name: "Daniel", team: "Shopify", settings: { fov: 110, distance: 270, height: 100, angle: -3, stiffness: 0.4, deadzone: 0.1, sens_dir: 1.3, sens_air: 1.4 } },
+                { name: "Rise", team: "BDS", settings: { fov: 110, distance: 280, height: 100, angle: -4, stiffness: 0.4, deadzone: 0.1, sens_dir: 1.6, sens_air: 1.6 } },
+                { name: "Atow", team: "KC", settings: { fov: 110, distance: 270, height: 110, angle: -3, stiffness: 0.35, deadzone: 0.08, sens_dir: 1.5, sens_air: 1.5 } }
             ],
             en: [
                 { name: "Zen", team: "Vitality", settings: { fov: 110, distance: 280, height: 100, angle: -3, stiffness: 0.4, deadzone: 0.05, sens_dir: 1.4, sens_air: 1.4 } },
@@ -549,24 +586,36 @@
                 { name: "Vatira", team: "KC", settings: { fov: 109, distance: 270, height: 100, angle: -4, stiffness: 0.35, deadzone: 0.08, sens_dir: 1.3, sens_air: 1.3 } },
                 { name: "Firstkiller", team: "G2", settings: { fov: 110, distance: 280, height: 100, angle: -3, stiffness: 0.5, deadzone: 0.05, sens_dir: 1.35, sens_air: 1.35 } },
                 { name: "Beastmode", team: "G2", settings: { fov: 110, distance: 270, height: 90, angle: -5, stiffness: 0.45, deadzone: 0.1, sens_dir: 1.4, sens_air: 1.4 } },
-                { name: "Daniel", team: "Shopify", settings: { fov: 110, distance: 270, height: 100, angle: -3, stiffness: 0.4, deadzone: 0.1, sens_dir: 1.3, sens_air: 1.4 } }
+                { name: "Daniel", team: "Shopify", settings: { fov: 110, distance: 270, height: 100, angle: -3, stiffness: 0.4, deadzone: 0.1, sens_dir: 1.3, sens_air: 1.4 } },
+                { name: "Rise", team: "BDS", settings: { fov: 110, distance: 280, height: 100, angle: -4, stiffness: 0.4, deadzone: 0.1, sens_dir: 1.6, sens_air: 1.6 } },
+                { name: "Atow", team: "KC", settings: { fov: 110, distance: 270, height: 110, angle: -3, stiffness: 0.35, deadzone: 0.08, sens_dir: 1.5, sens_air: 1.5 } }
             ]
         };
 
         let currentLang = 'es';
 
-        function showEventDetails(eventName, eventDate, eventLocation, eventPrize, eventVerified, eventDesc) {
+        function isEventPast(eventDateStart) {
+            return eventDateStart < today;
+        }
+
+        function showEventDetails(event) {
             const modal = document.getElementById('eventModal');
             const modalTitle = document.getElementById('modalTitle');
             const modalBody = document.getElementById('modalBody');
             
-            modalTitle.innerHTML = `🏆 ${eventName}`;
+            const isPast = isEventPast(event.dateStart);
+            const statusText = isPast ? (currentLang === 'es' ? '🏁 FINALIZADO' : '🏁 FINISHED') : (currentLang === 'es' ? '📅 PRÓXIMO' : '📅 UPCOMING');
+            const winnerHtml = event.winner ? `<p><strong>🏆 Ganador:</strong> ${event.winner} ${event.winnerScore ? `(${event.winnerScore})` : ''}</p>` : '';
+            
+            modalTitle.innerHTML = `🏆 ${event.name}`;
             modalBody.innerHTML = `
-                <p><strong>📅 Fecha:</strong> ${eventDate}</p>
-                <p><strong>📍 Ubicación:</strong> ${eventLocation}</p>
-                <p><strong>💰 Premio:</strong> ${eventPrize}</p>
-                <p><strong>✅ Verificado:</strong> ${eventVerified ? 'Sí' : 'Pendiente'}</p>
-                <p><strong>📖 Descripción:</strong> ${eventDesc}</p>
+                <p><strong>📅 Fecha:</strong> ${event.date}</p>
+                <p><strong>📍 Ubicación:</strong> ${event.location}</p>
+                <p><strong>💰 Premio:</strong> ${event.prize}</p>
+                <p><strong>✅ Verificado:</strong> ${event.verified ? (currentLang === 'es' ? 'Sí' : 'Yes') : (currentLang === 'es' ? 'Pendiente' : 'Pending')}</p>
+                <p><strong>📖 Descripción:</strong> ${event.desc}</p>
+                ${winnerHtml}
+                <p><strong>📌 Estado:</strong> <span style="color: ${isPast ? '#FF5E00' : '#4CAF50'}; font-weight: bold;">${statusText}</span></p>
             `;
             modal.classList.add('show');
         }
@@ -580,12 +629,17 @@
             const events = eventsData[currentLang];
             container.innerHTML = '';
             events.forEach(event => {
+                const isPast = isEventPast(event.dateStart);
+                const statusClass = isPast ? 'status-finished' : 'status-upcoming';
+                const statusText = isPast ? (currentLang === 'es' ? '🏁 Finalizado' : '🏁 Finished') : (currentLang === 'es' ? '📅 Próximo' : '📅 Upcoming');
+                
                 container.innerHTML += `
-                    <div class="event-card" onclick="showEventDetails('${event.name}', '${event.date}', '${event.location}', '${event.prize}', ${event.verified}, '${event.desc}')">
+                    <div class="event-card ${isPast ? 'past' : ''}" onclick="showEventDetails(${JSON.stringify(event).replace(/"/g, '&quot;')})">
                         <div class="event-name">🏆 ${event.name}</div>
                         <div class="event-date">📅 ${event.date}</div>
                         <div class="event-location">📍 ${event.location}</div>
-                        ${event.verified ? '<div style="font-size:0.6em; color:#4CAF50;">✅ Verificado</div>' : '<div style="font-size:0.6em; color:#FF5E00;">⚠️ Por confirmar</div>'}
+                        <div class="event-status ${statusClass}">${statusText}</div>
+                        ${event.winner && isPast ? `<div style="font-size:0.65em; color:#FF5E00; margin-top:5px;">🏆 Ganador: ${event.winner}</div>` : ''}
                     </div>
                 `;
             });
@@ -616,8 +670,8 @@
         function loadCameraSettings() {
             const container = document.getElementById('cameraSettings');
             const settings = currentLang === 'es' 
-                ? [{name:"Campo de visión (FOV)",value:"110",desc:"Máximo permitido"},{name:"Distancia",value:"270-280",desc:"Balance campo/coche"},{name:"Altura",value:"90-110",desc:"Mejor visión"},{name:"Ángulo",value:"-3 a -5",desc:"Cámara más baja"},{name:"Rigidez",value:"0.35-0.50",desc:"Movimiento con velocidad"},{name:"Velocidad giro",value:"3.00-4.00",desc:"Qué tan rápido gira"}]
-                : [{name:"Field of View",value:"110",desc:"Maximum allowed"},{name:"Distance",value:"270-280",desc:"Balance view/car"},{name:"Height",value:"90-110",desc:"Better vision"},{name:"Angle",value:"-3 to -5",desc:"Lower camera"},{name:"Stiffness",value:"0.35-0.50",desc:"Camera movement"},{name:"Swivel Speed",value:"3.00-4.00",desc:"Turn speed"}];
+                ? [{name:"Campo de visión (FOV)",value:"110",desc:"Máximo permitido. Mejor visión periférica"},{name:"Distancia",value:"270 - 280",desc:"Balance entre ver el campo y controlar el coche"},{name:"Altura",value:"90 - 110",desc:"Más altura = mejor visión del campo"},{name:"Ángulo",value:"-3 a -5",desc:"Negativo = cámara más baja"},{name:"Rigidez (Stiffness)",value:"0.35 - 0.50",desc:"Movimiento de cámara con velocidad"},{name:"Velocidad de giro",value:"3.00 - 4.00",desc:"Qué tan rápido gira la cámara"}]
+                : [{name:"Field of View (FOV)",value:"110",desc:"Maximum allowed. Better peripheral vision"},{name:"Distance",value:"270 - 280",desc:"Balance between field view and car control"},{name:"Height",value:"90 - 110",desc:"Higher = better field vision"},{name:"Angle",value:"-3 to -5",desc:"Negative = lower camera angle"},{name:"Stiffness",value:"0.35 - 0.50",desc:"How much camera moves with speed"},{name:"Swivel Speed",value:"3.00 - 4.00",desc:"How fast camera turns"}];
             container.innerHTML = '';
             settings.forEach(set => {
                 container.innerHTML += `<div class="setting-item"><div class="setting-name">${set.name}</div><div class="setting-value">${set.value}</div><div class="setting-desc">${set.desc}</div></div>`;
@@ -627,8 +681,8 @@
         function loadControls() {
             const body = document.getElementById('controlsBody');
             const controls = currentLang === 'es'
-                ? [{action:"Acelerar",key:"R2/RT",why:"Respuesta proporcional"},{action:"Frenar",key:"L2/LT",why:"Control progresivo"},{action:"Saltar",key:"X/A",why:"Acceso rápido"},{action:"Boost",key:"R1/RB",why:"Saltar y boostear"},{action:"Derrape",key:"Square/X",why:"Estándar"},{action:"Air Roll Izq",key:"L1/LB",why:"Rotación izquierda"},{action:"Air Roll Der",key:"R1/RB",why:"Rotación derecha"}]
-                : [{action:"Accelerate",key:"R2/RT",why:"Proportional"},{action:"Brake",key:"L2/LT",why:"Progressive"},{action:"Jump",key:"X/A",why:"Quick access"},{action:"Boost",key:"R1/RB",why:"Jump+Boost"},{action:"Drift",key:"Square/X",why:"Standard"},{action:"Air Roll L",key:"L1/LB",why:"Left roll"},{action:"Air Roll R",key:"R1/RB",why:"Right roll"}];
+                ? [{action:"Acelerar",key:"R2/RT",why:"Respuesta proporcional"},{action:"Frenar / Marcha atrás",key:"L2/LT",why:"Control progresivo"},{action:"Saltar",key:"X/A",why:"Acceso rápido"},{action:"Boost",key:"R1/RB",why:"Permite saltar y boostear juntos"},{action:"Derrape / Rotación",key:"Square/X",why:"Estándar cómodo"},{action:"Rotación Aérea Izquierda",key:"L1/LB",why:"Air roll izquierdo"},{action:"Rotación Aérea Derecha",key:"R1/RB",why:"Air roll derecho"}]
+                : [{action:"Accelerate",key:"R2/RT",why:"Proportional response"},{action:"Brake / Reverse",key:"L2/LT",why:"Progressive control"},{action:"Jump",key:"X/A",why:"Quick access"},{action:"Boost",key:"R1/RB",why:"Allows jumping and boosting together"},{action:"Drift / Air Roll",key:"Square/X",why:"Standard comfortable"},{action:"Air Roll Left",key:"L1/LB",why:"Left air roll"},{action:"Air Roll Right",key:"R1/RB",why:"Right air roll"}];
             body.innerHTML = '';
             controls.forEach(ctrl => {
                 body.innerHTML += `<tr><td>${ctrl.action}</td><td><span class="key-badge">${ctrl.key}</span></td><td>${ctrl.why}</td></tr>`;
@@ -638,8 +692,8 @@
         function loadVideoSettings() {
             const container = document.getElementById('videoSettings');
             const settings = currentLang === 'es'
-                ? [{name:"Resolución",value:"1920x1080",desc:"Nativa"},{name:"Texturas",value:"Alta",desc:"Balance"},{name:"Sombras",value:"Bajas",desc:"Mejora FPS"},{name:"Desenfoque",value:"Apagado",desc:"Reduce input lag"},{name:"V-Sync",value:"Apagado",desc:"Reduce input lag"},{name:"FPS Límite",value:"250",desc:"Según monitor"}]
-                : [{name:"Resolution",value:"1920x1080",desc:"Native"},{name:"Textures",value:"High",desc:"Balance"},{name:"Shadows",value:"Low",desc:"Better FPS"},{name:"Motion Blur",value:"Off",desc:"Reduce input lag"},{name:"V-Sync",value:"Off",desc:"Reduce input lag"},{name:"FPS Limit",value:"250",desc:"Match monitor"}];
+                ? [{name:"Resolución",value:"1920x1080",desc:"Nativa"},{name:"Calidad de texturas",value:"Alta o Rendimiento",desc:"Balance calidad/FPS"},{name:"Sombras",value:"Bajas o Apagadas",desc:"Mejora FPS"},{name:"Desenfoque de movimiento",value:"Apagado",desc:"Reduce input lag"},{name:"V-Sync",value:"Apagado",desc:"Reduce input lag drásticamente"},{name:"FPS Límite",value:"250",desc:"O igual a tu monitor"}]
+                : [{name:"Resolution",value:"1920x1080",desc:"Native"},{name:"Texture Quality",value:"High or Performance",desc:"Balance quality/FPS"},{name:"Shadows",value:"Low or Off",desc:"Improves FPS"},{name:"Motion Blur",value:"Off",desc:"Reduces input lag"},{name:"V-Sync",value:"Off",desc:"Drastically reduces input lag"},{name:"FPS Limit",value:"250",desc:"Or match your monitor"}];
             container.innerHTML = '';
             settings.forEach(set => {
                 container.innerHTML += `<div class="setting-item"><div class="setting-name">${set.name}</div><div class="setting-value">${set.value}</div><div class="setting-desc">${set.desc}</div></div>`;
@@ -649,27 +703,54 @@
         function loadTips() {
             const container = document.getElementById('tipsGrid');
             const tips = currentLang === 'es'
-                ? [{title:"🎯 Calentamiento",desc:"15 min Free Play"},{title:"⚙️ Rotaciones",desc:"Rota al palo lejano"},{title:"💪 Posicionamiento",desc:"Entre balón y portería"},{title:"🔋 Boost",desc:"Recoge pads de 12"},{title:"🎮 Mecánicas",desc:"Half-flip, Wave dash"},{title:"📺 Repeticiones",desc:"Analiza errores"}]
-                : [{title:"🎯 Warmup",desc:"15 min Free Play"},{title:"⚙️ Rotations",desc:"Rotate far post"},{title:"💪 Positioning",desc:"Ball to goal"},{title:"🔋 Boost",desc:"Collect 12 pads"},{title:"🎮 Mechanics",desc:"Half-flip, Wave dash"},{title:"📺 Replays",desc:"Analyze mistakes"}];
+                ? [{title:"🎯 Calentamiento",desc:"15 minutos en Free Play antes de ranked. Practica aires, dribles y recuperaciones."},{title:"⚙️ Rotaciones",desc:"Nunca te quedes debajo del balón. Rota por el lado opuesto al balón tras tu toque."},{title:"💪 Posicionamiento",desc:"En defensa, posícionate entre el balón y tu portería. En ataque, mantén espacio."},{title:"🔋 Gestión de boost",desc:"Recoge pads pequeños (12 de boost). Nunca te quedes sin boost."},{title:"🎮 Mecánicas básicas",desc:"Aprende: Half-flip, Wave dash, Fast aerial, Hook shot."},{title:"📺 Ver repeticiones",desc:"Analiza tus partidas. Busca errores de posicionamiento, no de mecánica."},{title:"🏋️ Entrenamiento",desc:"Usa los paquetes de entrenamiento personalizados. Hay cientos para cada habilidad."},{title:"🧠 Mentalidad",desc:"No culpes a tus compañeros. Concéntrate en tu propio juego y mejora constante."}]
+                : [{title:"🎯 Warmup",desc:"15 minutes in Free Play before ranked. Practice aerials, dribbles, and recoveries."},{title:"⚙️ Rotations",desc:"Never stay under the ball. Rotate to the far post after your touch."},{title:"💪 Positioning",desc:"On defense, position between the ball and your goal. On offense, keep spacing."},{title:"🔋 Boost Management",desc:"Collect small pads (12 boost). Never run out of boost."},{title:"🎮 Basic Mechanics",desc:"Learn: Half-flip, Wave dash, Fast aerial, Hook shot."},{title:"📺 Watch Replays",desc:"Analyze your matches. Look for positioning mistakes, not mechanical errors."},{title:"🏋️ Training",desc:"Use custom training packs. There are hundreds for every skill."},{title:"🧠 Mindset",desc:"Don't blame your teammates. Focus on your own game and constant improvement."}];
             container.innerHTML = '';
             tips.forEach(tip => {
                 container.innerHTML += `<div class="setting-item"><div class="setting-name">${tip.title}</div><div class="setting-desc">${tip.desc}</div></div>`;
             });
         }
 
-        function loadAllContent() {
+        function updateUITexts() {
+            // Header
             document.getElementById('mainTitle').innerHTML = currentLang === 'es' ? '🏆 Rocket League Pro Settings' : '🏆 Rocket League Pro Settings';
             document.getElementById('mainDesc').innerHTML = currentLang === 'es' ? 'Configuración de pros y calendario oficial RLCS 2026' : 'Pro settings and official RLCS 2026 schedule';
             document.getElementById('badgeText').innerHTML = currentLang === 'es' ? '🔥 Datos oficiales' : '🔥 Official data';
+            
+            // Títulos de pestañas (ahora se actualizan)
             document.getElementById('prosTitle').innerHTML = currentLang === 'es' ? '👑 Configuración de Pros' : '👑 Pro Players Settings';
             document.getElementById('camTitle').innerHTML = currentLang === 'es' ? '📷 Configuración de Cámara' : '📷 Camera Settings';
             document.getElementById('controlsTitle').innerHTML = currentLang === 'es' ? '🎮 Controles' : '🎮 Controls';
-            document.getElementById('videoTitle').innerHTML = currentLang === 'es' ? '🖥️ Video' : '🖥️ Video';
-            document.getElementById('tipsTitle').innerHTML = currentLang === 'es' ? '💡 Consejos' : '💡 Tips';
+            document.getElementById('videoTitle').innerHTML = currentLang === 'es' ? '🖥️ Video' : '🖥️ Video Settings';
+            document.getElementById('tipsTitle').innerHTML = currentLang === 'es' ? '💡 Consejos para mejorar' : '💡 Improvement Tips';
+            
+            // Tabla controles
             document.getElementById('actionCol').innerHTML = currentLang === 'es' ? 'Acción' : 'Action';
             document.getElementById('keyCol').innerHTML = currentLang === 'es' ? 'Tecla' : 'Key';
             document.getElementById('whyCol').innerHTML = currentLang === 'es' ? 'Por qué' : 'Why';
             
+            // Eventos título
+            document.getElementById('eventsTitle').innerHTML = currentLang === 'es' ? '📅 Próximos Eventos' : '📅 Upcoming Events';
+            
+            // Botones sidebar
+            const themeBtn = document.getElementById('themeBtn');
+            const isDark = document.body.classList.contains('dark');
+            themeBtn.innerHTML = isDark ? (currentLang === 'es' ? '☀️ Modo Claro' : '☀️ Light Mode') : (currentLang === 'es' ? '🌙 Modo Oscuro' : '🌙 Dark Mode');
+            
+            const langBtn = document.getElementById('langBtn');
+            langBtn.innerHTML = currentLang === 'es' ? '🇪🇸 Español' : '🇺🇸 English';
+            
+            // Botones de navegación
+            const navBtns = document.querySelectorAll('.nav-btn');
+            if(navBtns[0]) navBtns[0].innerHTML = currentLang === 'es' ? '👑 Pro Players' : '👑 Pro Players';
+            if(navBtns[1]) navBtns[1].innerHTML = currentLang === 'es' ? '📷 Cámara' : '📷 Camera';
+            if(navBtns[2]) navBtns[2].innerHTML = currentLang === 'es' ? '🎮 Controles' : '🎮 Controls';
+            if(navBtns[3]) navBtns[3].innerHTML = currentLang === 'es' ? '🖥️ Video' : '🖥️ Video';
+            if(navBtns[4]) navBtns[4].innerHTML = currentLang === 'es' ? '💡 Consejos' : '💡 Tips';
+        }
+
+        function loadAllContent() {
+            updateUITexts();
             loadEvents();
             loadPros();
             loadCameraSettings();
@@ -680,13 +761,14 @@
 
         function toggleLanguage() {
             currentLang = currentLang === 'es' ? 'en' : 'es';
-            document.querySelector('.lang-toggle').innerHTML = currentLang === 'es' ? '🇺🇸 English' : '🇪🇸 Español';
             loadAllContent();
         }
 
         function toggleTheme() {
             document.body.classList.toggle('dark');
-            document.querySelector('.theme-toggle').innerHTML = document.body.classList.contains('dark') ? '☀️ Modo Claro' : '🌙 Modo Oscuro';
+            const isDark = document.body.classList.contains('dark');
+            const themeBtn = document.getElementById('themeBtn');
+            themeBtn.innerHTML = isDark ? (currentLang === 'es' ? '☀️ Modo Claro' : '☀️ Light Mode') : (currentLang === 'es' ? '🌙 Modo Oscuro' : '🌙 Dark Mode');
         }
 
         function showTab(tabId, btn) {
