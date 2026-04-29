@@ -4,7 +4,7 @@
 
 ![Rocket League Banner](https://cdn-icons-png.flaticon.com/512/4428/4428198.png)
 
-### Tu centro definitivo para configuraciones de jugadores profesionales y calendario oficial RLCS
+### Your ultimate hub for pro player settings and official RLCS schedule
 
 [![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-004DE5?style=for-the-badge&logo=github)](https://martinlazoneira.github.io/RLProHub/)
 [![Rocket League](https://img.shields.io/badge/Rocket-League-FF5E00?style=for-the-badge&logo=rocket&logoColor=white)](https://www.rocketleague.com/)
@@ -14,27 +14,27 @@
 
 ---
 
-## ✨ **Características**
+## ✨ **Features**
 
-| Característica | Descripción |
-|----------------|-------------|
-| 🕐 **Reloj en tiempo real** | Muestra fecha y hora actual del sistema |
-| 🌓 **Modo oscuro/claro** | Interfaz adaptable a tu preferencia |
-| 🌎 **Bilingüe** | Soporte completo para Español e Inglés |
-| 👑 **15+ Jugadores Pro** | Configuraciones reales de los mejores jugadores |
-| 🔍 **Buscador inteligente** | Busca por nombre o equipo |
-| 📝 **Sugerir jugadores** | Los usuarios pueden proponer nuevos pros |
-| 🎮 **Controles personalizables** | Configura tus teclas preferidas |
-| 📅 **Calendario RLCS 2026** | Eventos oficiales con fechas reales |
-| 📱 **Responsive Design** | Funciona perfectamente en móvil y PC |
-| 💾 **Persistencia local** | Guarda tus preferencias en el navegador |
+| Feature | Description |
+|---------|-------------|
+| 🕐 **Real-time clock** | Shows current system date and time |
+| 🌓 **Dark/Light mode** | Adaptable interface to your preference |
+| 🌎 **Bilingual** | Full support for Spanish and English |
+| 👑 **15+ Pro Players** | Real settings from the best players |
+| 🔍 **Smart search** | Search by name or team |
+| 📝 **Suggest players** | Users can propose new pros |
+| 🎮 **Customizable controls** | Set your preferred keybindings |
+| 📅 **RLCS 2026 Calendar** | Official events with real dates |
+| 📱 **Responsive Design** | Works perfectly on mobile and PC |
+| 💾 **Local persistence** | Saves your preferences in the browser |
 
 ---
 
-## 🎯 **Jugadores Profesionales incluidos**
+## 🎯 **Pro Players Included**
 
-| Jugador | Equipo |
-|---------|--------|
+| Player | Team |
+|--------|------|
 | Zen | Vitality |
 | M0nkey M00n | BDS |
 | Vatira | KC |
@@ -53,25 +53,25 @@
 
 ---
 
-## 📅 **Eventos RLCS 2026**
+## 📅 **RLCS 2026 Events**
 
-| Evento | Fecha | Ubicación | Premio |
-|--------|-------|-----------|--------|
-| RLCS Major 1 - Boston | 19-22 Febrero 2026 | Boston, USA | $354,000 |
-| RLCS Major 2 - París | 20-24 Mayo 2026 | París, Francia | $354,000 |
-| RLCS World Championship | 15-20 Septiembre 2026 | TBD | $1,200,000 |
-| Esports World Cup | Julio-Agosto 2026 | Riad, Arabia Saudita | TBA |
-| FIFAe World Cup | Diciembre 2026 | Riad, Arabia Saudita | TBA |
-
----
-
-## 🚀 **Demo en vivo**
-
-👉 [**Visita RLProHub**](https://martinlazoneira.github.io/RLProHub/) 👈
+| Event | Date | Location | Prize |
+|-------|------|----------|-------|
+| RLCS Major 1 - Boston | Feb 19-22, 2026 | Boston, USA | $354,000 |
+| RLCS Major 2 - Paris | May 20-24, 2026 | Paris, France | $354,000 |
+| RLCS World Championship | Sep 15-20, 2026 | TBD | $1,200,000 |
+| Esports World Cup | July-August 2026 | Riyadh, Saudi Arabia | TBA |
+| FIFAe World Cup | December 2026 | Riyadh, Saudi Arabia | TBA |
 
 ---
 
-## 🛠️ **Tecnologías utilizadas**
+## 🚀 **Live Demo**
+
+👉 [**Visit RLProHub**](https://martinlazoneira.github.io/RLProHub/) 👈
+
+---
+
+## 🛠️ **Technologies Used**
 
 <div align="center">
 
@@ -84,4 +84,61 @@
 
 ---
 
-## 📁 **Estructura del proyecto**
+## 🎨 **Rocket League Colors**
+
+| Color | Code | Usage |
+|-------|------|-------|
+| 🔵 Blue | `#004DE5` | Blue team, gradients |
+| 🟠 Orange | `#FF5E00` | Orange team, accents |
+
+---
+
+## 📱 **Screenshots**
+
+<div align="center">
+
+| Light Mode | Dark Mode |
+|------------|-----------|
+| *Light view* | *Dark view* |
+
+</div>
+
+---
+
+## 🤝 **How to Contribute**
+
+1. 🐛 **Report bugs** - Open an issue on GitHub
+2. 💡 **Suggest players** - Use the "Suggest player" button on the website
+3. ⭐ **Star the project** - If you like it, leave a ⭐
+
+---
+
+## 📄 **License**
+
+This project is licensed under the **MIT License** - free to use, modify, and distribute.
+
+---
+
+## 👨‍💻 **Author**
+
+Made with 🧡 by **Martín Lazoneira**
+
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/martinlazoneira)
+
+---
+
+## 📢 **Acknowledgments**
+
+- Player data based on [Liquipedia](https://liquipedia.net/rocketleague)
+- Event dates based on official Psyonix announcements
+- Inspired by the Rocket League community
+
+---
+
+<div align="center">
+
+### ⭐ **If you like this project, don't forget to leave a star on GitHub!** ⭐
+
+**#RocketLeague #RLCS #RLProHub**
+
+</div>
