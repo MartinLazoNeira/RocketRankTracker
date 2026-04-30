@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RLProHub - Guía</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo"><a href="index.html">RL<span>ProHub</span></a></div>
+        <div class="nav-controls">
+            <div class="real-clock"><div class="date" id="realDate"></div><div class="time" id="realTime"></div></div>
+            <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙</button>
+            <button class="lang-toggle" id="langBtn" onclick="toggleLanguage()">🇪🇸</button>
+        </div>
+    </div>
+    <div class="nav-links" style="justify-content: center; padding: 10px 0;">
+        <a href="index.html" id="inicioLink">Inicio</a>
+        <a href="pros.html" id="prosLink">Pro Players</a>
+        <a href="eventos.html" id="eventosLink">Eventos</a>
+        <a href="guia.html" class="active" id="guiaLink">Guía</a>
+        <a href="sugerencias.html" id="sugerenciasLink">Sugerencias</a>
+    </div>
+
+    <div class="content-header">
+        <h1 id="guiaTitle">📚 Guía de Configuración</h1>
+        <p id="guiaDesc">Aprende todo sobre configuraciones de cámara, controles, video y consejos</p>
+    </div>
+
+    <div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+        <div class="card"><h2 id="camTitle">📷 Configuración de Cámara</h2><div class="settings-grid" id="cameraGrid"></div></div>
+        <div class="card"><h2 id="controlsTitle">🎮 Controles</h2>
+            <div class="controls-selector"><h3 id="customizeTitle">⚙️ Personalizar controles</h3>
+                <div class="selector-group"><label id="driftLabel">🎯 Derrape / Air Roll:</label><select id="driftSelect" onchange="updateControls()"><option value="Square/X">Square/X (Predeterminado)</option><option value="L1/LB">L1/LB (Air Roll Izquierdo)</option></select><span class="current-setting" id="driftCurrent">Seleccionado: Square/X</span></div>
+                <div class="selector-group"><label id="boostLabel">💨 Boost:</label><span class="current-setting">Circle/B (Fijo)</span><span id="boostRecommended" style="font-size:0.8em; color:var(--text-secondary)">(Recomendado por pros)</span></div>
+            </div>
+            <table class="controls-table"><thead><tr><th id="actionCol">Acción</th><th id="keyCol">Tecla</th><th id="whyCol">Por qué</th></tr></thead><tbody id="controlsBody"></tbody></table>
+        </div>
+        <div class="card"><h2 id="videoTitle">🖥️ Video</h2><div class="settings-grid" id="videoGrid"></div></div>
+        <div class="card"><h2 id="tipsTitle">💡 Consejos para mejorar</h2><div class="settings-grid" id="tipsGrid"></div></div>
+    </div>
+
+    <div class="footer"><p id="footerText">© 2026 RLProHub</p></div>
+
+    <script src="js/main.js"></script>
+    <script>
+        function renderGuides() {
+            const cameraContainer = document.getElementById('cameraGrid');
+            const videoContainer = document.getElementById('videoGrid');
+            const tipsContainer = document.getElementById('tipsGrid');
+            if (cameraContainer) cameraContainer.innerHTML = cameraGuide[currentLang].map(c => `<div class="setting-item"><div class="setting-name">${c.name}</div><div class="setting-value">${c.value}</div><div class="setting-desc">${c.desc}</div></div>`).join('');
+            if (videoContainer) videoContainer.innerHTML = videoGuide[currentLang].map(v => `<div class="setting-item"><div class="setting-name">${v.name}</div><div class="setting-value">${v.value}</div><div class="setting-desc">${v.desc}</div></div>`).join('');
+            if (tipsContainer) tipsContainer.innerHTML = tipsGuide[currentLang].map(t => `<div class="setting-item"><div class="setting-name">${t.title}</div><div class="setting-desc">${t.desc}</div></div>`).join('');
+        }
+
+        function loadControls() {
+            const body = document.getElementById('controlsBody');
+            if (!body) return;
+            const controlsData = [
+                { action: "Acelerar", key: "R2/RT", why: "Respuesta proporcional" },
+                { action: "Frenar", key: "L2/LT", why: "Control progresivo" },
+                { action: "Saltar", key: "X/A", why: "Acceso rápido" },
+                { action: "Boost", key: "Circle/B", why: "Saltar y boostear juntos" },
+                { action: "Derrape", key: currentDriftKey, why: "Estándar cómodo" },
+                { action: "Air Roll Izq", key: "L1/LB", why: "Rotación izquierda" },
+                { action: "Air Roll Der", key: "R1/RB", why: "Rotación derecha" }
+            ];
+            body.innerHTML = controlsData.map(c => `<tr><td>${c.action}</td><td><span class="key-badge">${c.key}</span></td><td>${c.why}</td></tr>`).join('');
+        }
+
+        function updateControls() {
+            const select = document.getElementById('driftSelect');
+            currentDriftKey = select.value;
+            document.getElementById('driftCurrent').innerHTML = `Seleccionado: ${currentDriftKey}`;
+            localStorage.setItem('rocketDriftKey', currentDriftKey);
+            loadControls();
+        }
+
+        function updateAllTexts() {
+            const t = translations[currentLang];
+            document.getElementById('inicioLink').innerHTML = t.inicio;
+            document.getElementById('prosLink').innerHTML = t.pros;
+            document.getElementById('eventosLink').innerHTML = t.eventos;
+            document.getElementById('guiaLink').innerHTML = t.guia;
+            document.getElementById('sugerenciasLink').innerHTML = t.sugerencias;
+            document.getElementById('guiaTitle').innerHTML = t.guiaTitle;
+            document.getElementById('guiaDesc').innerHTML = t.guiaDesc;
+            document.getElementById('camTitle').innerHTML = t.camTitle || "📷 Configuración de Cámara";
+            document.getElementById('controlsTitle').innerHTML = t.controlsTitle;
+            document.getElementById('videoTitle').innerHTML = t.videoTitle;
+            document.getElementById('tipsTitle').innerHTML = t.tipsTitle;
+            document.getElementById('actionCol').innerHTML = t.actionCol;
+            document.getElementById('keyCol').innerHTML = t.keyCol;
+            document.getElementById('whyCol').innerHTML = t.whyCol;
+            document.getElementById('customizeTitle').innerHTML = t.customizeTitle;
+            document.getElementById('driftLabel').innerHTML = t.driftLabel;
+            document.getElementById('boostLabel').innerHTML = t.boostLabel;
+            document.getElementById('boostRecommended').innerHTML = t.boostRecommended;
+            document.getElementById('footerText').innerHTML = t.footerText;
+            renderGuides();
+            loadControls();
+        }
+        const saved = localStorage.getItem('rocketDriftKey');
+        if (saved) { currentDriftKey = saved; const ds = document.getElementById('driftSelect'); if (ds) ds.value = saved; }
+        updateAllTexts();
+    </script>
+</body>
+</html>
