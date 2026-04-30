@@ -7,6 +7,23 @@
     <link rel="stylesheet" href="css/style.css">
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <style>
+        /* Estilos adicionales para asegurar que los detalles funcionen bien */
+        .pro-details {
+            display: none;
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            background: var(--card-bg);
+        }
+        .pro-details.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
     <div class="navbar">
@@ -34,7 +51,7 @@
         <div class="buscar-section">
             <div class="buscar-box">
                 <input type="text" id="proSearchInput" class="buscar-input" placeholder="🔍 Buscar jugador pro...">
-                <button class="buscar-btn" onclick="searchPro()">🔍 Buscar</button>
+                <button class="buscar-btn" id="searchBtnText" onclick="searchPro()">🔍 Buscar</button>
             </div>
         </div>
         <div id="prosCount" style="margin-bottom: 10px; color: var(--text-secondary);"></div>
@@ -49,32 +66,126 @@
     <script src="js/main.js"></script>
     <script>
         let currentPros = [...prosData[currentLang]];
+        let currentOpenPro = null; // Guarda el ID del pro actualmente abierto
 
         function renderPros() {
             const grid = document.getElementById('prosGrid');
             const count = document.getElementById('prosCount');
             if (!grid) return;
-            count.innerHTML = `📊 ${currentPros.length} ${currentLang === 'es' ? 'jugadores' : 'players'}`;
+            count.innerHTML = `📊 ${currentPros.length} ${currentLang === 'es' ? 'jugadores profesionales disponibles' : 'pro players available'}`;
             grid.innerHTML = '';
-            currentPros.forEach(pro => {
-                const card = document.createElement('div'); card.className = 'pro-card';
-                const header = document.createElement('div'); header.className = 'pro-header';
-                header.onclick = () => { const d = document.getElementById(`det-${pro.name}`); const i = document.getElementById(`icon-${pro.name}`); if (d.classList.contains('show')) { d.classList.remove('show'); i.innerHTML = '▼'; } else { d.classList.add('show'); i.innerHTML = '▲'; } };
-                const avatar = document.createElement('div'); avatar.className = 'pro-avatar'; avatar.innerHTML = pro.name.charAt(0);
-                const info = document.createElement('div'); info.className = 'pro-info-summary'; info.innerHTML = `<div class="pro-name">${pro.name}</div><div class="pro-team">${pro.team}</div>`;
-                const icon = document.createElement('div'); icon.className = 'toggle-icon'; icon.id = `icon-${pro.name}`; icon.innerHTML = '▼';
-                header.appendChild(avatar); header.appendChild(info); header.appendChild(icon); card.appendChild(header);
-                const details = document.createElement('div'); details.className = 'pro-details'; details.id = `det-${pro.name}`;
-                details.innerHTML = `<h4>📷 Cámara</h4><table class="settings-table"><tr><td>Campo de visión</td><td>${pro.settings.fov}</td></tr><tr><td>Distancia</td><td>${pro.settings.distance}</td></tr><tr><td>Altura</td><td>${pro.settings.height}</td></tr><tr><td>Ángulo</td><td>${pro.settings.angle}</td></tr><tr><td>Rigidez</td><td>${pro.settings.stiffness}</td></tr><tr><td>Velocidad giro</td><td>${pro.settings.swivel || 3.5}</td></tr></table><h4>🎮 Controles</h4><table class="settings-table"><tr><td>Zona muerta</td><td>${pro.settings.deadzone}</td></tr><tr><td>Sensibilidad Dir</td><td>${pro.settings.sens_dir}</td></tr><tr><td>Sensibilidad Aire</td><td>${pro.settings.sens_air}</td></tr></table>`;
-                card.appendChild(details); grid.appendChild(card);
+            
+            currentPros.forEach((pro, idx) => {
+                const proId = `pro-${pro.name.replace(/\s/g, '')}`;
+                
+                const card = document.createElement('div'); 
+                card.className = 'pro-card';
+                card.setAttribute('data-pro-id', proId);
+                
+                const header = document.createElement('div'); 
+                header.className = 'pro-header';
+                
+                const avatar = document.createElement('div'); 
+                avatar.className = 'pro-avatar'; 
+                avatar.innerHTML = pro.name.charAt(0);
+                
+                const info = document.createElement('div'); 
+                info.className = 'pro-info-summary'; 
+                info.innerHTML = `<div class="pro-name">${pro.name}</div><div class="pro-team">${pro.team}</div>`;
+                
+                const icon = document.createElement('div'); 
+                icon.className = 'toggle-icon'; 
+                icon.id = `icon-${proId}`; 
+                icon.innerHTML = '▼';
+                
+                header.appendChild(avatar);
+                header.appendChild(info);
+                header.appendChild(icon);
+                
+                // Al hacer clic en el header, togglear los detalles
+                header.onclick = (function(pId, pName) {
+                    return function() { toggleProDetails(pId, pName); };
+                })(proId, pro.name);
+                
+                card.appendChild(header);
+                
+                const details = document.createElement('div'); 
+                details.className = 'pro-details'; 
+                details.id = `det-${proId}`;
+                
+                // Construir el contenido de detalles
+                const swivelValue = pro.settings.swivel || '3.50';
+                const deadzoneValue = pro.settings.deadzone || '0.08';
+                const sensDirValue = pro.settings.sens_dir || '1.40';
+                const sensAirValue = pro.settings.sens_air || '1.40';
+                
+                details.innerHTML = `
+                    <h4>📷 ${currentLang === 'es' ? 'Configuración de Cámara' : 'Camera Settings'}</h4>
+                    <table class="settings-table">
+                        <tr><td>${currentLang === 'es' ? 'Campo de visión (FOV)' : 'Field of View (FOV)'}</td><td>${pro.settings.fov}</td></tr>
+                        <tr><td>${currentLang === 'es' ? 'Distancia' : 'Distance'}</td><td>${pro.settings.distance}</td></tr>
+                        <tr><td>${currentLang === 'es' ? 'Altura' : 'Height'}</td><td>${pro.settings.height}</td></tr>
+                        <tr><td>${currentLang === 'es' ? 'Ángulo' : 'Angle'}</td><td>${pro.settings.angle}</td></tr>
+                        <tr><td>${currentLang === 'es' ? 'Rigidez' : 'Stiffness'}</td><td>${pro.settings.stiffness}</td></tr>
+                        <tr><td>${currentLang === 'es' ? 'Velocidad de giro' : 'Swivel Speed'}</td><td>${swivelValue}</td></tr>
+                    </table>
+                    <h4>🎮 ${currentLang === 'es' ? 'Configuración de Controles' : 'Controller Settings'}</h4>
+                    <table class="settings-table">
+                        <tr><td>${currentLang === 'es' ? 'Zona muerta' : 'Deadzone'}</td><td>${deadzoneValue}</td></tr>
+                        <tr><td>${currentLang === 'es' ? 'Sensibilidad Dirección' : 'Steering Sensitivity'}</td><td>${sensDirValue}</td></tr>
+                        <tr><td>${currentLang === 'es' ? 'Sensibilidad Aérea' : 'Aerial Sensitivity'}</td><td>${sensAirValue}</td></tr>
+                    </table>
+                    <div style="margin-top:15px; font-size:0.7rem; color: var(--text-secondary);">
+                        * ${currentLang === 'es' ? 'Configuración basada en streams oficiales y Liquipedia' : 'Settings based on official streams and Liquipedia'}
+                    </div>
+                `;
+                
+                card.appendChild(details);
+                grid.appendChild(card);
             });
+        }
+
+        function toggleProDetails(proId, proName) {
+            const detailsDiv = document.getElementById(`det-${proId}`);
+            const iconSpan = document.getElementById(`icon-${proId}`);
+            
+            if (!detailsDiv || !iconSpan) return;
+            
+            // Si el mismo pro ya estaba abierto, lo cerramos
+            if (currentOpenPro === proId) {
+                detailsDiv.classList.remove('show');
+                iconSpan.innerHTML = '▼';
+                currentOpenPro = null;
+            } else {
+                // Si hay otro pro abierto, lo cerramos primero
+                if (currentOpenPro) {
+                    const prevDetails = document.getElementById(`det-${currentOpenPro}`);
+                    const prevIcon = document.getElementById(`icon-${currentOpenPro}`);
+                    if (prevDetails) prevDetails.classList.remove('show');
+                    if (prevIcon) prevIcon.innerHTML = '▼';
+                }
+                // Abrimos el nuevo
+                detailsDiv.classList.add('show');
+                iconSpan.innerHTML = '▲';
+                currentOpenPro = proId;
+            }
         }
 
         function searchPro() {
             const term = document.getElementById('proSearchInput').value.toLowerCase().trim();
-            if (term === '') { currentPros = [...prosData[currentLang]]; renderPros(); document.getElementById('noResultsMsg').style.display = 'none'; return; }
-            const filtered = prosData[currentLang].filter(p => p.name.toLowerCase().includes(term) || p.team.toLowerCase().includes(term));
-            currentPros = filtered; renderPros();
+            if (term === '') { 
+                currentPros = [...prosData[currentLang]]; 
+                renderPros(); 
+                currentOpenPro = null;
+                document.getElementById('noResultsMsg').style.display = 'none'; 
+                return; 
+            }
+            const filtered = prosData[currentLang].filter(p => 
+                p.name.toLowerCase().includes(term) || p.team.toLowerCase().includes(term)
+            );
+            currentPros = filtered; 
+            renderPros();
+            currentOpenPro = null;
             document.getElementById('noResultsMsg').style.display = filtered.length === 0 ? 'block' : 'none';
         }
 
@@ -89,11 +200,26 @@
             document.getElementById('prosDesc').innerHTML = t.prosDesc;
             document.getElementById('footerText').innerHTML = t.footerText;
             document.getElementById('proSearchInput').placeholder = t.searchPlaceholder;
-            document.querySelector('.buscar-btn').innerHTML = t.searchBtn;
+            if (document.getElementById('searchBtnText')) document.getElementById('searchBtnText').innerHTML = t.searchBtn;
             document.getElementById('noResultsText').innerHTML = t.noResults;
+            // Re-renderizar pros para actualizar textos dentro de las tarjetas
             renderPros();
         }
+        
+        // Sincronizar idioma cuando cambie
+        const originalToggleLanguage = window.toggleLanguage;
+        window.toggleLanguage = function() {
+            originalToggleLanguage();
+            updateAllTexts();
+        };
+        
+        // Inicializar
         updateAllTexts();
+        
+        // Sincronizar con cambios de idioma desde otros archivos
+        if (typeof window.addEventListener === 'function') {
+            window.addEventListener('languageChanged', function() { updateAllTexts(); });
+        }
     </script>
 </body>
 </html>
