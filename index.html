@@ -606,6 +606,20 @@
             font-size: 0.8em;
         }
 
+        .loading-spinner {
+            text-align: center;
+            padding: 40px;
+            color: white;
+        }
+
+        .api-error {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 0, 0, 0.2);
+            border-radius: 15px;
+            color: white;
+        }
+
         @media (max-width: 768px) {
             .navbar {
                 flex-direction: column;
@@ -689,7 +703,7 @@
 
         <div class="events-section">
             <h2 id="eventsSectionTitle">📅 Próximos Eventos</h2>
-            <div class="events-preview" id="eventsPreview"></div>
+            <div id="eventsPreview" class="events-preview"></div>
         </div>
 
         <div class="footer">
@@ -816,6 +830,7 @@
         // ==================== VARIABLES GLOBALES ====================
         let currentLang = 'es';
         let currentDriftKey = "Square/X";
+        let liveEvents = []; // Almacenar eventos de la API
 
         // ==================== PROS DATA ====================
         const prosData = {
@@ -877,87 +892,141 @@
             ]
         };
 
-        // ==================== EVENTOS ====================
-        const eventsData = {
+        // ==================== EVENTOS ESTÁTICOS (FALLBACK) ====================
+        const staticEventsData = {
             es: [
-                { name: "RLCS Major 1 - Boston", date: "19-22 Febrero 2026", dateStart: new Date(2026, 1, 19), dateEnd: new Date(2026, 1, 22), location: "Boston, USA", prize: "$354,000", verified: true, desc: "Primer Major de la temporada 2026.", winner: "Gentle Mates", winnerScore: "4-1" },
-                { name: "RLCS Major 2 - París", date: "20-24 Mayo 2026", dateStart: new Date(2026, 4, 20), dateEnd: new Date(2026, 4, 24), location: "París, Francia", prize: "$354,000", verified: true, desc: "Segundo Major de la temporada.", winner: null },
-                { name: "RLCS World Championship", date: "15-20 Septiembre 2026", dateStart: new Date(2026, 8, 15), dateEnd: new Date(2026, 8, 20), location: "TBD", prize: "$1,200,000", verified: true, desc: "Campeonato mundial.", winner: null },
-                { name: "Esports World Cup", date: "Julio-Agosto 2026", dateStart: new Date(2026, 6, 1), dateEnd: new Date(2026, 7, 31), location: "Riad, Arabia Saudita", prize: "Por anunciar", verified: false, desc: "Rocket League confirmado.", winner: null },
-                { name: "FIFAe World Cup", date: "Diciembre 2026", dateStart: new Date(2026, 11, 1), dateEnd: new Date(2026, 11, 31), location: "Riad, Arabia Saudita", prize: "Por anunciar", verified: true, desc: "FIFA x Rocket League.", winner: null }
+                { name: "RLCS Major 1 - Boston", date: "19-22 Febrero 2026", location: "Boston, USA", prize: "$354,000", desc: "Primer Major de la temporada 2026.", winner: "Gentle Mates" },
+                { name: "RLCS Major 2 - París", date: "20-24 Mayo 2026", location: "París, Francia", prize: "$354,000", desc: "Segundo Major de la temporada.", winner: null },
+                { name: "RLCS World Championship", date: "15-20 Septiembre 2026", location: "TBD", prize: "$1,200,000", desc: "Campeonato mundial.", winner: null }
             ],
             en: [
-                { name: "RLCS Major 1 - Boston", date: "Feb 19-22, 2026", dateStart: new Date(2026, 1, 19), dateEnd: new Date(2026, 1, 22), location: "Boston, USA", prize: "$354,000", verified: true, desc: "First Major of 2026 season.", winner: "Gentle Mates", winnerScore: "4-1" },
-                { name: "RLCS Major 2 - Paris", date: "May 20-24, 2026", dateStart: new Date(2026, 4, 20), dateEnd: new Date(2026, 4, 24), location: "Paris, France", prize: "$354,000", verified: true, desc: "Second Major of the season.", winner: null },
-                { name: "RLCS World Championship", date: "Sep 15-20, 2026", dateStart: new Date(2026, 8, 15), dateEnd: new Date(2026, 8, 20), location: "TBD", prize: "$1,200,000", verified: true, desc: "World Championship.", winner: null },
-                { name: "Esports World Cup", date: "July-August 2026", dateStart: new Date(2026, 6, 1), dateEnd: new Date(2026, 7, 31), location: "Riyadh, Saudi Arabia", prize: "TBA", verified: false, desc: "Rocket League confirmed.", winner: null },
-                { name: "FIFAe World Cup", date: "December 2026", dateStart: new Date(2026, 11, 1), dateEnd: new Date(2026, 11, 31), location: "Riyadh, Saudi Arabia", prize: "TBA", verified: true, desc: "FIFA x Rocket League collab.", winner: null }
+                { name: "RLCS Major 1 - Boston", date: "Feb 19-22, 2026", location: "Boston, USA", prize: "$354,000", desc: "First Major of 2026 season.", winner: "Gentle Mates" },
+                { name: "RLCS Major 2 - Paris", date: "May 20-24, 2026", location: "Paris, France", prize: "$354,000", desc: "Second Major of the season.", winner: null },
+                { name: "RLCS World Championship", date: "Sep 15-20, 2026", location: "TBD", prize: "$1,200,000", desc: "World Championship.", winner: null }
             ]
         };
 
-        // ==================== DATOS ESTÁTICOS ====================
-        const cameraData = {
-            es: [
-                { name: "Campo de visión (FOV)", value: "110", desc: "Máximo permitido. Mejor visión periférica" },
-                { name: "Distancia", value: "270 - 280", desc: "Balance entre ver el campo y controlar el coche" },
-                { name: "Altura", value: "90 - 110", desc: "Más altura = mejor visión del campo" },
-                { name: "Ángulo", value: "-3 a -5", desc: "Negativo = cámara más baja" },
-                { name: "Rigidez (Stiffness)", value: "0.35 - 0.50", desc: "Movimiento de cámara con velocidad" },
-                { name: "Velocidad de giro", value: "3.00 - 4.00", desc: "Qué tan rápido gira la cámara" }
-            ],
-            en: [
-                { name: "Field of View (FOV)", value: "110", desc: "Maximum allowed. Better peripheral vision" },
-                { name: "Distance", value: "270 - 280", desc: "Balance between field view and car control" },
-                { name: "Height", value: "90 - 110", desc: "Higher = better field vision" },
-                { name: "Angle", value: "-3 to -5", desc: "Negative = lower camera angle" },
-                { name: "Stiffness", value: "0.35 - 0.50", desc: "How much camera moves with speed" },
-                { name: "Swivel Speed", value: "3.00 - 4.00", desc: "How fast camera turns" }
-            ]
-        };
+        // ==================== API DE EVENTOS (Esports ICS) ====================
+        async function fetchLiveEvents() {
+            const container = document.getElementById('eventsPreview');
+            const eventsListContainer = document.getElementById('eventsList');
+            
+            // Mostrar loading
+            if (container) container.innerHTML = '<div class="loading-spinner">🔄 Cargando eventos en tiempo real...</div>';
+            if (eventsListContainer) eventsListContainer.innerHTML = '<div class="loading-spinner">🔄 Cargando eventos en tiempo real...</div>';
+            
+            try {
+                // Usar proxy CORS para evitar problemas de CORS
+                const proxyUrl = 'https://api.allorigins.win/raw?url=';
+                const apiUrl = 'https://ics.snwfdhmp.com/api/matches?game=rocket-league';
+                
+                const response = await fetch(proxyUrl + encodeURIComponent(apiUrl));
+                
+                if (!response.ok) throw new Error('API no responde');
+                
+                const data = await response.json();
+                
+                if (data && data.length > 0) {
+                    // Procesar eventos de la API
+                    liveEvents = data.map(match => ({
+                        name: match.name || match.tournament_name || 'Rocket League Match',
+                        date: match.date || match.start_date || 'Fecha por confirmar',
+                        location: match.location || match.venue || 'TBD',
+                        prize: match.prize_pool || match.prize || 'Por anunciar',
+                        desc: match.description || `Partido de ${match.league_name || 'RLCS'}`,
+                        winner: match.winner || null
+                    }));
+                } else {
+                    // Si no hay datos, usar estáticos
+                    liveEvents = staticEventsData[currentLang];
+                }
+                
+                displayEvents();
+                
+            } catch (error) {
+                console.error('Error al cargar eventos de API:', error);
+                // Fallback a datos estáticos
+                liveEvents = staticEventsData[currentLang];
+                displayEvents();
+                showApiError();
+            }
+        }
 
-        const videoData = {
-            es: [
-                { name: "Resolución", value: "1920x1080", desc: "Nativa" },
-                { name: "Calidad de texturas", value: "Alta o Rendimiento", desc: "Balance calidad/FPS" },
-                { name: "Sombras", value: "Bajas o Apagadas", desc: "Mejora FPS" },
-                { name: "Desenfoque de movimiento", value: "Apagado", desc: "Reduce input lag" },
-                { name: "V-Sync", value: "Apagado", desc: "Reduce input lag drásticamente" },
-                { name: "FPS Límite", value: "250", desc: "O igual a tu monitor" }
-            ],
-            en: [
-                { name: "Resolution", value: "1920x1080", desc: "Native" },
-                { name: "Texture Quality", value: "High or Performance", desc: "Balance quality/FPS" },
-                { name: "Shadows", value: "Low or Off", desc: "Improves FPS" },
-                { name: "Motion Blur", value: "Off", desc: "Reduces input lag" },
-                { name: "V-Sync", value: "Off", desc: "Drastically reduces input lag" },
-                { name: "FPS Limit", value: "250", desc: "Or match your monitor" }
-            ]
-        };
+        function displayEvents() {
+            const container = document.getElementById('eventsPreview');
+            const eventsListContainer = document.getElementById('eventsList');
+            
+            if (!container) return;
+            
+            const events = liveEvents.length > 0 ? liveEvents : staticEventsData[currentLang];
+            
+            // Mostrar solo primeros 3 eventos en preview
+            container.innerHTML = '';
+            events.slice(0, 3).forEach(event => {
+                const statusClass = event.winner ? 'status-finished' : 'status-upcoming';
+                const statusText = event.winner ? (currentLang === 'es' ? 'Finalizado' : 'Finished') : (currentLang === 'es' ? 'Próximo' : 'Upcoming');
+                
+                container.innerHTML += `
+                    <div class="event-preview-card" onclick="showEventDetailsStatic('${event.name.replace(/'/g, "\\'")}', '${event.date}', '${event.location}', '${event.prize}', ${!!event.winner}, '${event.desc}', '${event.winner || ''}')">
+                        <div class="event-name">🏆 ${event.name}</div>
+                        <div class="event-date">📅 ${event.date}</div>
+                        <div class="event-status ${statusClass}">${statusText}</div>
+                        ${event.winner ? `<div style="font-size:0.65em; color:#FF5E00; margin-top:5px;">🏆 Winner: ${event.winner}</div>` : ''}
+                    </div>
+                `;
+            });
+            
+            // Lista completa de eventos
+            if (eventsListContainer) {
+                eventsListContainer.innerHTML = '';
+                events.forEach(event => {
+                    const statusClass = event.winner ? 'status-finished' : 'status-upcoming';
+                    const statusText = event.winner ? (currentLang === 'es' ? 'Finalizado' : 'Finished') : (currentLang === 'es' ? 'Próximo' : 'Upcoming');
+                    
+                    eventsListContainer.innerHTML += `
+                        <div class="setting-item" style="cursor: pointer;" onclick="showEventDetailsStatic('${event.name.replace(/'/g, "\\'")}', '${event.date}', '${event.location}', '${event.prize}', ${!!event.winner}, '${event.desc}', '${event.winner || ''}')">
+                            <div class="setting-name">${event.name}</div>
+                            <div class="setting-value">📅 ${event.date}</div>
+                            <div class="setting-desc">📍 ${event.location} | 💰 ${event.prize}</div>
+                            <div class="event-status ${statusClass}" style="margin-top: 10px; display: inline-block;">${statusText}</div>
+                            ${event.winner ? `<div style="margin-top: 8px; color: #FF5E00;">🏆 Winner: ${event.winner}</div>` : ''}
+                        </div>
+                    `;
+                });
+            }
+        }
 
-        const tipsData = {
-            es: [
-                { title: "🎯 Calentamiento", desc: "15 minutos en Free Play antes de ranked. Practica aires, dribles y recuperaciones." },
-                { title: "⚙️ Rotaciones", desc: "Nunca te quedes debajo del balón. Rota por el lado opuesto al balón tras tu toque." },
-                { title: "💪 Posicionamiento", desc: "En defensa, posícionate entre el balón y tu portería. En ataque, mantén espacio." },
-                { title: "🔋 Gestión de boost", desc: "Recoge pads pequeños (12 de boost). Nunca te quedes sin boost." },
-                { title: "🎮 Mecánicas básicas", desc: "Aprende: Half-flip, Wave dash, Fast aerial, Hook shot." },
-                { title: "📺 Ver repeticiones", desc: "Analiza tus partidas. Busca errores de posicionamiento, no de mecánica." },
-                { title: "🏋️ Entrenamiento", desc: "Usa los paquetes de entrenamiento personalizados. Hay cientos para cada habilidad." },
-                { title: "🧠 Mentalidad", desc: "No culpes a tus compañeros. Concéntrate en tu propio juego y mejora constante." }
-            ],
-            en: [
-                { title: "🎯 Warmup", desc: "15 minutes in Free Play before ranked. Practice aerials, dribbles, and recoveries." },
-                { title: "⚙️ Rotations", desc: "Never stay under the ball. Rotate to the far post after your touch." },
-                { title: "💪 Positioning", desc: "On defense, position between the ball and your goal. On offense, keep spacing." },
-                { title: "🔋 Boost Management", desc: "Collect small pads (12 boost). Never run out of boost." },
-                { title: "🎮 Basic Mechanics", desc: "Learn: Half-flip, Wave dash, Fast aerial, Hook shot." },
-                { title: "📺 Watch Replays", desc: "Analyze your matches. Look for positioning mistakes, not mechanical errors." },
-                { title: "🏋️ Training", desc: "Use custom training packs. There are hundreds for every skill." },
-                { title: "🧠 Mindset", desc: "Don't blame your teammates. Focus on your own game and constant improvement." }
-            ]
-        };
+        function showApiError() {
+            const container = document.getElementById('eventsPreview');
+            if (container && container.innerHTML.includes('Cargando')) {
+                container.innerHTML = '<div class="api-error">⚠️ Usando datos de respaldo. Los eventos en tiempo real no están disponibles momentáneamente.</div>';
+                setTimeout(() => {
+                    if (liveEvents.length > 0) displayEvents();
+                }, 2000);
+            }
+        }
 
-        // ==================== FUNCIONES ====================
+        function showEventDetailsStatic(name, date, location, prize, hasWinner, desc, winner) {
+            const modal = document.getElementById('eventModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            
+            const statusText = hasWinner ? (currentLang === 'es' ? '🏁 FINALIZADO' : '🏁 FINISHED') : (currentLang === 'es' ? '📅 PRÓXIMO' : '📅 UPCOMING');
+            const winnerHtml = winner ? `<p><strong>🏆 Winner:</strong> ${winner}</p>` : '';
+            
+            modalTitle.innerHTML = `🏆 ${name}`;
+            modalBody.innerHTML = `
+                <p><strong>📅 Date:</strong> ${date}</p>
+                <p><strong>📍 Location:</strong> ${location}</p>
+                <p><strong>💰 Prize:</strong> ${prize}</p>
+                <p><strong>📖 Description:</strong> ${desc}</p>
+                ${winnerHtml}
+                <p><strong>📌 Status:</strong> <span style="color: ${hasWinner ? '#FF5E00' : '#4CAF50'}; font-weight: bold;">${statusText}</span></p>
+            `;
+            modal.classList.add('show');
+        }
+
+        // ==================== FUNCIONES DE NAVEGACIÓN ====================
         function showView(viewId) {
             document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
             document.getElementById(viewId + 'View').classList.add('active');
@@ -974,9 +1043,7 @@
             } else if (viewId === 'consejos') {
                 loadTips();
             } else if (viewId === 'eventos') {
-                loadFullEventsList();
-            } else if (viewId === 'landing') {
-                loadEventsPreview();
+                // Ya están cargados
             }
         }
 
@@ -990,71 +1057,6 @@
             document.getElementById('realTime').innerHTML = timeStr;
         }
         setInterval(updateRealClock, 1000);
-
-        function isEventFinished(event) {
-            const now = new Date();
-            return now > event.dateEnd;
-        }
-
-        function loadEventsPreview() {
-            const container = document.getElementById('eventsPreview');
-            if (!container) return;
-            const events = eventsData[currentLang];
-            container.innerHTML = '';
-            events.slice(0, 3).forEach(event => {
-                const isFinished = isEventFinished(event);
-                const statusClass = isFinished ? 'status-finished' : 'status-upcoming';
-                const statusText = isFinished ? (currentLang === 'es' ? 'Finalizado' : 'Finished') : (currentLang === 'es' ? 'Próximo' : 'Upcoming');
-                container.innerHTML += `
-                    <div class="event-preview-card" onclick="showEventDetails(${JSON.stringify(event).replace(/"/g, '&quot;')})">
-                        <div class="event-name">🏆 ${event.name}</div>
-                        <div class="event-date">📅 ${event.date}</div>
-                        <div class="event-status ${statusClass}">${statusText}</div>
-                    </div>
-                `;
-            });
-        }
-
-        function loadFullEventsList() {
-            const container = document.getElementById('eventsList');
-            if (!container) return;
-            const events = eventsData[currentLang];
-            container.innerHTML = '';
-            events.forEach(event => {
-                const isFinished = isEventFinished(event);
-                const statusClass = isFinished ? 'status-finished' : 'status-upcoming';
-                const statusText = isFinished ? (currentLang === 'es' ? 'Finalizado' : 'Finished') : (currentLang === 'es' ? 'Próximo' : 'Upcoming');
-                container.innerHTML += `
-                    <div class="setting-item" style="cursor: pointer;" onclick="showEventDetails(${JSON.stringify(event).replace(/"/g, '&quot;')})">
-                        <div class="setting-name">${event.name}</div>
-                        <div class="setting-value">📅 ${event.date}</div>
-                        <div class="setting-desc">📍 ${event.location} | 💰 ${event.prize}</div>
-                        <div class="event-status ${statusClass}" style="margin-top: 10px; display: inline-block;">${statusText}</div>
-                        ${event.winner && isFinished ? `<div style="margin-top: 8px; color: #FF5E00;">🏆 Winner: ${event.winner} ${event.winnerScore ? `(${event.winnerScore})` : ''}</div>` : ''}
-                    </div>
-                `;
-            });
-        }
-
-        function showEventDetails(event) {
-            const modal = document.getElementById('eventModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalBody = document.getElementById('modalBody');
-            const isFinished = isEventFinished(event);
-            const statusText = isFinished ? (currentLang === 'es' ? '🏁 FINALIZADO' : '🏁 FINISHED') : (currentLang === 'es' ? '📅 PRÓXIMO' : '📅 UPCOMING');
-            const winnerHtml = event.winner && isFinished ? `<p><strong>🏆 Winner:</strong> ${event.winner} ${event.winnerScore ? `(${event.winnerScore})` : ''}</p>` : '';
-            modalTitle.innerHTML = `🏆 ${event.name}`;
-            modalBody.innerHTML = `
-                <p><strong>📅 Date:</strong> ${event.date}</p>
-                <p><strong>📍 Location:</strong> ${event.location}</p>
-                <p><strong>💰 Prize:</strong> ${event.prize}</p>
-                <p><strong>✅ Verified:</strong> ${event.verified ? (currentLang === 'es' ? 'Sí' : 'Yes') : (currentLang === 'es' ? 'Pendiente' : 'Pending')}</p>
-                <p><strong>📖 Description:</strong> ${event.desc}</p>
-                ${winnerHtml}
-                <p><strong>📌 Status:</strong> <span style="color: ${isFinished ? '#FF5E00' : '#4CAF50'}; font-weight: bold;">${statusText}</span></p>
-            `;
-            modal.classList.add('show');
-        }
 
         function closeModal() {
             document.getElementById('eventModal').classList.remove('show');
@@ -1117,7 +1119,6 @@
                 return;
             }
             
-            // Por ahora solo guardamos en localStorage y mostramos mensaje
             const suggestions = JSON.parse(localStorage.getItem('proSuggestions') || '[]');
             suggestions.push({ name, team, reason, date: new Date().toISOString() });
             localStorage.setItem('proSuggestions', JSON.stringify(suggestions));
@@ -1150,6 +1151,67 @@
                 body.innerHTML += `<tr><td>${ctrl.action}</td><td><span class="key-badge">${ctrl.key}</span></td><td>${ctrl.why}</td></tr>`;
             });
         }
+
+        const cameraData = {
+            es: [
+                { name: "Campo de visión (FOV)", value: "110", desc: "Máximo permitido. Mejor visión periférica" },
+                { name: "Distancia", value: "270 - 280", desc: "Balance entre ver el campo y controlar el coche" },
+                { name: "Altura", value: "90 - 110", desc: "Más altura = mejor visión del campo" },
+                { name: "Ángulo", value: "-3 a -5", desc: "Negativo = cámara más baja" },
+                { name: "Rigidez (Stiffness)", value: "0.35 - 0.50", desc: "Movimiento de cámara con velocidad" },
+                { name: "Velocidad de giro", value: "3.00 - 4.00", desc: "Qué tan rápido gira la cámara" }
+            ],
+            en: [
+                { name: "Field of View (FOV)", value: "110", desc: "Maximum allowed. Better peripheral vision" },
+                { name: "Distance", value: "270 - 280", desc: "Balance between field view and car control" },
+                { name: "Height", value: "90 - 110", desc: "Higher = better field vision" },
+                { name: "Angle", value: "-3 to -5", desc: "Negative = lower camera angle" },
+                { name: "Stiffness", value: "0.35 - 0.50", desc: "How much camera moves with speed" },
+                { name: "Swivel Speed", value: "3.00 - 4.00", desc: "How fast camera turns" }
+            ]
+        };
+
+        const videoData = {
+            es: [
+                { name: "Resolución", value: "1920x1080", desc: "Nativa" },
+                { name: "Calidad de texturas", value: "Alta o Rendimiento", desc: "Balance calidad/FPS" },
+                { name: "Sombras", value: "Bajas o Apagadas", desc: "Mejora FPS" },
+                { name: "Desenfoque de movimiento", value: "Apagado", desc: "Reduce input lag" },
+                { name: "V-Sync", value: "Apagado", desc: "Reduce input lag drásticamente" },
+                { name: "FPS Límite", value: "250", desc: "O igual a tu monitor" }
+            ],
+            en: [
+                { name: "Resolution", value: "1920x1080", desc: "Native" },
+                { name: "Texture Quality", value: "High or Performance", desc: "Balance quality/FPS" },
+                { name: "Shadows", value: "Low or Off", desc: "Improves FPS" },
+                { name: "Motion Blur", value: "Off", desc: "Reduces input lag" },
+                { name: "V-Sync", value: "Off", desc: "Drastically reduces input lag" },
+                { name: "FPS Limit", value: "250", desc: "Or match your monitor" }
+            ]
+        };
+
+        const tipsData = {
+            es: [
+                { title: "🎯 Calentamiento", desc: "15 minutos en Free Play antes de ranked. Practica aires, dribles y recuperaciones." },
+                { title: "⚙️ Rotaciones", desc: "Nunca te quedes debajo del balón. Rota por el lado opuesto al balón tras tu toque." },
+                { title: "💪 Posicionamiento", desc: "En defensa, posícionate entre el balón y tu portería. En ataque, mantén espacio." },
+                { title: "🔋 Gestión de boost", desc: "Recoge pads pequeños (12 de boost). Nunca te quedes sin boost." },
+                { title: "🎮 Mecánicas básicas", desc: "Aprende: Half-flip, Wave dash, Fast aerial, Hook shot." },
+                { title: "📺 Ver repeticiones", desc: "Analiza tus partidas. Busca errores de posicionamiento, no de mecánica." },
+                { title: "🏋️ Entrenamiento", desc: "Usa los paquetes de entrenamiento personalizados. Hay cientos para cada habilidad." },
+                { title: "🧠 Mentalidad", desc: "No culpes a tus compañeros. Concéntrate en tu propio juego y mejora constante." }
+            ],
+            en: [
+                { title: "🎯 Warmup", desc: "15 minutes in Free Play before ranked. Practice aerials, dribbles, and recoveries." },
+                { title: "⚙️ Rotations", desc: "Never stay under the ball. Rotate to the far post after your touch." },
+                { title: "💪 Positioning", desc: "On defense, position between the ball and your goal. On offense, keep spacing." },
+                { title: "🔋 Boost Management", desc: "Collect small pads (12 boost). Never run out of boost." },
+                { title: "🎮 Basic Mechanics", desc: "Learn: Half-flip, Wave dash, Fast aerial, Hook shot." },
+                { title: "📺 Watch Replays", desc: "Analyze your matches. Look for positioning mistakes, not mechanical errors." },
+                { title: "🏋️ Training", desc: "Use custom training packs. There are hundreds for every skill." },
+                { title: "🧠 Mindset", desc: "Don't blame your teammates. Focus on your own game and constant improvement." }
+            ]
+        };
 
         function loadCameraSettings() {
             const container = document.getElementById('cameraSettings');
@@ -1324,12 +1386,11 @@
             document.getElementById('noResultsText').innerHTML = t.noResultsText;
             document.getElementById('noResultsSuggestionText').innerHTML = t.noResultsSuggestionText;
             
-            loadEventsPreview();
-            loadFullEventsList();
-            loadControls();
             loadCameraSettings();
             loadVideoSettings();
             loadTips();
+            loadControls();
+            displayEvents();
             
             if (document.getElementById('prosView').classList.contains('active')) {
                 loadPros(prosData[currentLang]);
@@ -1358,7 +1419,9 @@
             if (driftSelect) driftSelect.value = savedDrift;
         }
         
-        loadEventsPreview();
+        // Cargar eventos de la API
+        fetchLiveEvents();
+        
         updateAllTexts();
         loadPros(prosData[currentLang]);
         
